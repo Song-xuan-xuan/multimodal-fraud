@@ -1,0 +1,43 @@
+node_modules
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.claude/
+# Env
+envs/
+.venv/
+venv/
+
+# Models
+model/
+
+# Local tool state
+.claude/
+.vscode/
+
+# Generated RAG data/index
+backend/data/fraud_knowledge.json
+backend/data/output_data.json
+backend/storage/
+backend/data/
+backend/app/static/
+backend/__pycache__
+backend/.env
+backend/app/static/case_data/*.json
+# Large local datasets
+
+
+
+AGENTS.md
+
+docs/
+
+service-main/
+scripts/migrate_data.py
+

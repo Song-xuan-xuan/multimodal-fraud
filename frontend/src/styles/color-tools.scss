@@ -1,0 +1,33 @@
+@use 'sass:color';
+
+@function tech-alpha($color, $alpha) {
+  @return rgba($color, $alpha);
+}
+
+@function tech-mix($base, $overlay, $weight: 50%) {
+  @return color.mix($overlay, $base, $weight);
+}
+
+@function tech-glass-fill($tint: #00c6fb, $alpha: 0.12, $depth: #07111f, $depth-alpha: 0.72) {
+  @return linear-gradient(
+    180deg,
+    rgba($tint, $alpha) 0%,
+    rgba($depth, $depth-alpha) 100%
+  );
+}
+
+@mixin tech-glass-surface($tint: #00c6fb, $alpha: 0.1, $blur: 18px, $depth: #07111f, $depth-alpha: 0.82) {
+  background: tech-glass-fill($tint, $alpha, $depth, $depth-alpha);
+  backdrop-filter: blur($blur);
+  -webkit-backdrop-filter: blur($blur);
+}
+
+@mixin tech-focus-ring($color: #00c6fb, $size: 3px, $alpha: 0.24, $inset: false) {
+  $ring-color: rgba($color, $alpha);
+
+  @if $inset {
+    box-shadow: inset 0 0 0 $size $ring-color;
+  } @else {
+    box-shadow: 0 0 0 $size $ring-color;
+  }
+}

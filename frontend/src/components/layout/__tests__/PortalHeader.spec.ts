@@ -1,0 +1,19 @@
+﻿import fs from 'node:fs'
+import path from 'node:path'
+import { describe, expect, it } from 'vitest'
+
+const headerPath = path.resolve(__dirname, '../PortalHeader.vue')
+const source = fs.readFileSync(headerPath, 'utf-8')
+
+describe('PortalHeader regression', () => {
+  it('keeps grouped frontend navigation and login/register entry for unauthenticated users', () => {
+    expect(source).toContain('{{ frontendDirectNav.label }}')
+    expect(source).toContain('frontendNavGroups')
+    expect(source).toContain('检测工具')
+    expect(source).toContain('智能助手')
+    expect(source).toContain('登录')
+    expect(source).toContain('注册')
+    expect(source).toContain('width: min(1680px, calc(100vw - 64px))')
+    expect(source).toContain('margin: 0 auto')
+  })
+})

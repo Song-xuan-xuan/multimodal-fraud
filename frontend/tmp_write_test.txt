@@ -1,0 +1,2 @@
+import type { RouteLocationRaw } from 'vue-router'
+import { appRoute, appRouteName } from '@/router'
