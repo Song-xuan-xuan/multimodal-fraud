@@ -1,6 +1,6 @@
-﻿<template>
-  <div class="news-detect-view page-shell">
-    <h2>内容风险检测</h2>
+<template>
+  <div :class="['news-detect-view', { 'page-shell': !embedded, 'news-detect-view--embedded': embedded }]">
+    <h2 v-if="!embedded">内容风险检测</h2>
 
     <el-tabs v-model="activeMode" class="news-detect-view__tabs">
       <el-tab-pane label="综合检测" name="aggregate">
@@ -97,6 +97,10 @@ import type {
   ConsistencyDisplayResult,
   SegmentsDisplayResult,
 } from '@/types/newsDetection'
+
+withDefaults(defineProps<{ embedded?: boolean }>(), {
+  embedded: false,
+})
 
 const activeMode = ref('aggregate')
 const loading = ref(false)
@@ -218,5 +222,8 @@ async function detectSegments() {
 .news-detect-view__result {
   margin-top: 16px;
 }
-</style>
 
+.news-detect-view--embedded {
+  padding: 0;
+}
+</style>

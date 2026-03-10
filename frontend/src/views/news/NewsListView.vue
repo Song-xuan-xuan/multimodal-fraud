@@ -1,12 +1,12 @@
 ﻿<template>
   <div class="news-list-view" :class="pageMotionClass">
-    <section class="hero-section">
+    <!-- <section class="hero-section">
       <div>
         <p class="hero-eyebrow">资讯中心</p>
         <h1 class="hero-title">新闻列表</h1>
         <p class="hero-description">延续旧版筛选、结果浏览与详情跳转路径，提供更清晰的分区与统一状态反馈。</p>
       </div>
-    </section>
+    </section> -->
 
     <NewsFilterPanel
       v-model="draftFilters"
@@ -82,6 +82,7 @@ const viewMode = ref<'card' | 'table'>('card')
 const rawItems = ref<NewsItem[]>([])
 const total = ref(0)
 const totalPages = ref(0)
+let listRequestId = 0
 
 const baseLabels = ['投资理财', '刷单返利', '客服退款', '身份冒充', '待研判']
 const basePerPageOptions = [10, 20, 50]
@@ -171,6 +172,7 @@ const summary = computed<NewsListSummary>(() => {
 })
 
 async function fetchList() {
+  const requestId = ++listRequestId
   loading.value = true
   errorMessage.value = ''
 
@@ -183,16 +185,26 @@ async function fetchList() {
       platform: appliedFilters.value.platform || undefined,
     })
 
+    if (requestId !== listRequestId) {
+      return
+    }
+
     rawItems.value = result.items
     total.value = result.total
     totalPages.value = result.total_pages
   } catch (error: any) {
-    rawItems.value = []
-    total.value = 0
-    totalPages.value = 0
+    if (requestId !== listRequestId) {
+      return
+    }
     errorMessage.value = error?.response?.data?.detail || error?.message || '加载新闻列表失败'
+    if (!rawItems.value.length) {
+      total.value = 0
+      totalPages.value = 0
+    }
   } finally {
-    loading.value = false
+    if (requestId === listRequestId) {
+      loading.value = false
+    }
   }
 }
 
@@ -314,6 +326,5 @@ onMounted(async () => {
   }
 }
 </style>
-
 
 

@@ -1,3 +1,4 @@
+import json
 import math
 from typing import Any
 
@@ -7,6 +8,7 @@ from app.repositories.news_repo import get_news, get_news_by_ids, list_news
 from app.schemas.news import (
     CredibilityDimensionScores,
     CredibilityInfo,
+    KnowledgeGraphResponse,
     NewsDetailResponse,
     NewsDetailUIFallbacks,
     PropagationInfo,
@@ -58,6 +60,14 @@ def _safe_text(value: str | None, fallback: str = "") -> str:
     return value if isinstance(value, str) and value.strip() else fallback
 
 
+def normalize_credibility_dimensions(raw: Any) -> dict[str, float]:
+    if not isinstance(raw, dict):
+        raw = {}
+
+    keys = ["source", "content", "logic", "propagation", "AI", "content1", "content2"]
+    return {key: _to_float(raw.get(key), 0.0) for key in keys}
+
+
 def _collect_region_distribution(timeline: list[dict[str, Any]]) -> list[PropagationRegionItem]:
     region_count: dict[str, int] = {}
     for item in timeline:
@@ -86,46 +96,67 @@ def _build_relations(
     if not isinstance(relations_raw, dict):
         relations_raw = {}
 
-    knowledge_nodes = relations_raw.get("knowledge_nodes") or []
+    # 1) Seed node
     nodes = [
         RelationNode(
-            node_id=f"knowledge:{idx}",
-            name=str(name or ""),
-            category="knowledge",
-            value=1.0,
+            node_id=news.news_id,
+            name=news.title or "种子新闻",
+            category="seed",
+            value=20.0,
         )
-        for idx, name in enumerate(knowledge_nodes)
-        if str(name or "")
     ]
 
-    related_news: list[RelatedNewsItem] = []
     edges: list[RelationEdge] = []
 
+    # 2) Knowledge keyword nodes + edges to seed
+    knowledge_nodes = relations_raw.get("knowledge_nodes") or []
+    for idx, name in enumerate(knowledge_nodes):
+        name_str = str(name or "")
+        if not name_str:
+            continue
+        node_id = f"knowledge:{idx}"
+        nodes.append(
+            RelationNode(
+                node_id=node_id,
+                name=name_str,
+                category="knowledge",
+                value=3.0,
+            )
+        )
+        edges.append(
+            RelationEdge(
+                source=news.news_id,
+                target=node_id,
+                relation_type="has_keyword",
+                weight=1.0,
+            )
+        )
+
+    # 3) Related news nodes + edges to seed
+    related_news: list[RelatedNewsItem] = []
     for related_id in related_ids:
         article = related_articles_by_id.get(related_id)
-        if article:
-            related_news.append(
-                RelatedNewsItem(
-                    news_id=article.news_id,
-                    title=article.title or "",
-                    similarity=0.0,
-                    platform=article.platform or "",
-                    publish_time=article.publish_time or "",
-                    url=article.url or "",
-                )
-            )
-        else:
-            related_news.append(
-                RelatedNewsItem(
-                    news_id=related_id,
-                    title="",
-                    similarity=0.0,
-                    platform="",
-                    publish_time="",
-                    url="",
-                )
-            )
+        title = article.title or related_id if article else related_id
+        platform = article.platform or "" if article else ""
 
+        related_news.append(
+            RelatedNewsItem(
+                news_id=related_id,
+                title=title,
+                similarity=0.0,
+                platform=platform,
+                publish_time=article.publish_time or "" if article else "",
+                url=article.url or "" if article else "",
+            )
+        )
+        nodes.append(
+            RelationNode(
+                node_id=related_id,
+                name=title,
+                category="related_news",
+                value=8.0,
+            )
+        )
         edges.append(
             RelationEdge(
                 source=news.news_id,
@@ -143,9 +174,7 @@ async def get_news_aggregated_detail(db: AsyncSession, news_id: str) -> NewsDeta
     if not news:
         raise ValueError("新闻不存在")
 
-    credibility_dimensions_raw = news.credibility_dimensions or {}
-    if not isinstance(credibility_dimensions_raw, dict):
-        credibility_dimensions_raw = {}
+    credibility_dimensions_raw = normalize_credibility_dimensions(news.credibility_dimensions or {})
 
     propagation_raw = news.propagation_data or {}
     if not isinstance(propagation_raw, dict):
@@ -241,3 +270,111 @@ async def get_news_detail(db: AsyncSession, news_id: str):
     if not news:
         raise ValueError("新闻不存在")
     return news
+
+
+async def build_knowledge_graph(
+    db: AsyncSession, seed_news_id: str, max_depth: int = 2, max_nodes: int = 60
+) -> KnowledgeGraphResponse:
+    """Build a multi-hop knowledge graph starting from a seed news article.
+
+    Expands related_rumors and knowledge_nodes for each article up to max_depth layers.
+    """
+    seed = await get_news(db, seed_news_id)
+    if not seed:
+        raise ValueError("新闻不存在")
+
+    node_map: dict[str, RelationNode] = {}
+    edge_list: list[RelationEdge] = []
+    visited: set[str] = set()
+    queue: list[tuple[str, int]] = [(seed_news_id, 0)]
+
+    # BFS expansion
+    while queue:
+        current_id, depth = queue.pop(0)
+        if current_id in visited:
+            continue
+        visited.add(current_id)
+
+        if len(node_map) >= max_nodes:
+            break
+
+        # Fetch article
+        if current_id == seed_news_id:
+            article = seed
+        else:
+            article = await get_news(db, current_id)
+        if not article:
+            continue
+
+        # Add news node
+        is_seed = current_id == seed_news_id
+        if current_id not in node_map:
+            node_map[current_id] = RelationNode(
+                node_id=current_id,
+                name=article.title or current_id,
+                category="seed" if is_seed else "news",
+                value=20.0 if is_seed else 10.0,
+            )
+
+        relations_raw = article.relations_data or {}
+        if not isinstance(relations_raw, dict):
+            relations_raw = {}
+
+        # Add knowledge keyword nodes + edges
+        for idx, kw in enumerate(relations_raw.get("knowledge_nodes") or []):
+            kw_str = str(kw or "")
+            if not kw_str:
+                continue
+            # Use keyword text as node_id to merge duplicate keywords across articles
+            kw_node_id = f"kw:{kw_str}"
+            if kw_node_id not in node_map:
+                node_map[kw_node_id] = RelationNode(
+                    node_id=kw_node_id,
+                    name=kw_str,
+                    category="keyword",
+                    value=4.0,
+                )
+            edge_key = (current_id, kw_node_id, "has_keyword")
+            edge_list.append(RelationEdge(
+                source=current_id, target=kw_node_id,
+                relation_type="has_keyword", weight=1.0,
+            ))
+
+        # Expand related rumors (if within depth)
+        if depth < max_depth:
+            related_ids = [
+                str(rid) for rid in (relations_raw.get("related_rumors") or []) if str(rid or "")
+            ]
+            # Pre-fetch related articles
+            related_map = await get_news_by_ids(db, related_ids)
+            for rid in related_ids:
+                rel_article = related_map.get(rid)
+                if rid not in node_map and len(node_map) < max_nodes:
+                    node_map[rid] = RelationNode(
+                        node_id=rid,
+                        name=(rel_article.title or rid) if rel_article else rid,
+                        category="news",
+                        value=8.0,
+                    )
+                edge_list.append(RelationEdge(
+                    source=current_id, target=rid,
+                    relation_type="related_rumor", weight=1.0,
+                ))
+                if rid not in visited:
+                    queue.append((rid, depth + 1))
+
+    # Deduplicate edges
+    seen_edges: set[tuple[str, str, str]] = set()
+    unique_edges: list[RelationEdge] = []
+    for e in edge_list:
+        key = (e.source, e.target, e.relation_type)
+        if key not in seen_edges:
+            seen_edges.add(key)
+            unique_edges.append(e)
+
+    return KnowledgeGraphResponse(
+        seed_news_id=seed_news_id,
+        seed_title=seed.title or "",
+        nodes=list(node_map.values()),
+        edges=unique_edges,
+    )

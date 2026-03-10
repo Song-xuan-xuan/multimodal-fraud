@@ -25,27 +25,13 @@ export const frontendDirectNav = {
   route: appRoute.home,
 }
 
-export const frontendNavGroups: NavigationGroup[] = [
-  {
-    index: 'frontend-detection',
-    label: '风险分析',
-    items: [
-      { label: '多模态分析', routeName: appRouteName.aiDetect, route: appRoute.aiDetect },
-      { label: '内容风险检测', routeName: appRouteName.newsDetect, route: appRoute.newsDetect },
-      { label: '话术分类识别', routeName: appRouteName.classify, route: appRoute.classify },
-      { label: '风险核验', routeName: appRouteName.factCheck, route: appRoute.factCheck },
-    ],
-  },
-  {
-    index: 'frontend-ai',
-    label: '反诈顾问',
-    items: [
-      { label: 'AI 聊天', routeName: appRouteName.aiChat, route: appRoute.aiChat },
-      { label: '反诈助手', routeName: appRouteName.aiAssistant, route: appRoute.aiAssistant },
-      { label: 'Agent', routeName: appRouteName.agent, route: appRoute.agent },
-    ],
-  },
+export const frontendPrimaryNav: NavigationItem[] = [
+  { label: '专项分析', routeName: appRouteName.aiDetect, route: appRoute.aiDetect },
+  { label: '反诈助手', routeName: appRouteName.aiAssistant, route: appRoute.aiAssistant },
+  { label: '多模态分析', routeName: appRouteName.agent, route: appRoute.agent },
 ]
+
+export const frontendNavGroups: NavigationGroup[] = []
 
 export const backendDirectNav = {
   label: '风险看板',
@@ -54,8 +40,6 @@ export const backendDirectNav = {
 }
 
 export function buildBackendNavGroups(username: string | null | undefined): NavigationGroup[] {
-  const isAdmin = isAdminUsername(username)
-
   return [
     {
       index: 'backend-insight',
@@ -70,8 +54,7 @@ export function buildBackendNavGroups(username: string | null | undefined): Navi
       index: 'backend-content',
       label: '反诈治理',
       items: [
-        { label: '新闻列表', routeName: appRouteName.newsList, route: appRoute.newsList() },
-        ...(isAdmin ? [{ label: '审核工作台', routeName: appRouteName.adminReviewWorkbench, route: appRoute.adminReviewWorkbench }] : []),
+        { label: '反诈案例', routeName: appRouteName.newsList, route: appRoute.newsList() },
         { label: '线索举报', routeName: appRouteName.report, route: appRoute.report },
       ],
     },

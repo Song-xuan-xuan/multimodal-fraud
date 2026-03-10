@@ -142,31 +142,75 @@ watch(
 .stat-card {
   padding: 14px;
   border-radius: 16px;
-  background: color-mix(in srgb, var(--el-color-primary) 6%, white);
-  border: 1px solid color-mix(in srgb, var(--el-color-primary) 14%, var(--el-border-color));
+  background: rgba(76, 201, 255, 0.06);
+  border: 1px solid rgba(76, 201, 255, 0.14);
 }
 
 .stat-label {
   display: block;
   margin-bottom: 6px;
   font-size: 12px;
-  color: var(--el-text-color-secondary);
+  color: var(--tech-text-secondary, #a0aec0);
 }
 
 .stat-value {
   font-size: 22px;
   line-height: 1;
-  color: var(--el-text-color-primary);
+  color: var(--tech-text-primary, #e2e8f0);
 }
 
 .detail-table {
   margin-top: 12px;
 }
 
+.detail-table :deep(.el-table__header-wrapper th) {
+  background: rgba(76, 201, 255, 0.06) !important;
+  color: var(--tech-text-secondary, #a0aec0);
+}
+
+.detail-table :deep(.el-table__body-wrapper) {
+  background: transparent;
+}
+
+.detail-table :deep(.el-table__row) {
+  background: rgba(14, 28, 54, 0.6);
+  color: var(--tech-text-regular, #ccc);
+}
+
+.detail-table :deep(.el-table__row--striped td.el-table__cell) {
+  background: rgba(76, 201, 255, 0.04) !important;
+}
+
+.detail-table :deep(tr:hover > td.el-table__cell) {
+  background: rgba(76, 201, 255, 0.10) !important;
+}
+
+.detail-table :deep(.el-table__inner-wrapper::before) {
+  background-color: rgba(76, 201, 255, 0.08);
+}
+
+.detail-table :deep(td.el-table__cell),
+.detail-table :deep(th.el-table__cell) {
+  border-bottom-color: rgba(76, 201, 255, 0.08);
+}
+
 .pager {
   margin-top: 16px;
   display: flex;
   justify-content: flex-end;
+}
+
+.pager :deep(.el-pagination button),
+.pager :deep(.el-pager li) {
+  background: rgba(76, 201, 255, 0.04);
+  border-color: rgba(76, 201, 255, 0.12);
+  color: var(--tech-text-secondary, #a0aec0);
+}
+
+.pager :deep(.el-pager li.is-active) {
+  background: rgba(76, 201, 255, 0.14);
+  border-color: rgba(76, 201, 255, 0.24);
+  color: var(--tech-color-primary-strong, #4cc9ff);
 }
 
 @media (max-width: 768px) {

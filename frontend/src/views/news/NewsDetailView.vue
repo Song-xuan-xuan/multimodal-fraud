@@ -11,8 +11,14 @@
       type="error"
       show-icon
       :closable="false"
-      :title="errorMessage"
-    />
+    >
+      <template #title>
+        <div class="error-alert__content">
+          <span>{{ errorMessage }}</span>
+          <el-button text type="primary" @click="fetchDetail">重试</el-button>
+        </div>
+      </template>
+    </el-alert>
 
     <el-empty v-if="!loading && !detail" description="暂无详情数据" />
 
@@ -194,6 +200,7 @@ const actionBarRef = ref<{ closeDialog: () => void } | null>(null)
 const activeTarget = ref('')
 const currentProvince = ref('')
 let observer: IntersectionObserver | null = null
+let detailRequestId = 0
 
 const currentNewsId = computed(() => {
   if (detail.value?.baseInfo.newsId) {
@@ -260,9 +267,20 @@ const audienceProfileItems = computed(() => {
 async function fetchDetail() {
   const id = route.params.id as string
   if (!id) return
+  const requestId = ++detailRequestId
   await load(id)
+  if (requestId !== detailRequestId) {
+    return
+  }
   if (detail.value?.baseInfo.newsId) {
-    await engagementStore.fetchStats(detail.value.baseInfo.newsId)
+    try {
+      await engagementStore.fetchStats(detail.value.baseInfo.newsId)
+    } catch {
+      ElMessage.warning('互动数据加载失败，详情主体内容已正常显示')
+    }
+  }
+  if (requestId !== detailRequestId || !detail.value) {
+    return
   }
   await nextTick()
   initObserver()
@@ -414,6 +432,13 @@ onBeforeUnmount(() => {
 
 .error-alert {
   margin-top: -8px;
+}
+
+.error-alert__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .detail-layout {

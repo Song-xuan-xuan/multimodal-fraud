@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from datetime import datetime
+
+from app.schemas.rag import SourceNode
 
 class ChatMessageCreate(BaseModel):
     content: str = Field(..., min_length=1)
@@ -10,9 +11,16 @@ class ChatMessageResponse(BaseModel):
     role: str
     content: str
     created_at: str
+    sources: List[SourceNode] = Field(default_factory=list)
+    retrieval_mode: Optional[str] = None
 
 class ChatCreate(BaseModel):
     title: str = Field(default="新对话")
+
+
+class ChatRenameRequest(BaseModel):
+    title: str = Field(..., min_length=1, max_length=512)
+
 
 class ChatResponse(BaseModel):
     id: str
@@ -21,6 +29,11 @@ class ChatResponse(BaseModel):
     updated_at: str
     is_shared: bool = False
     messages: List[ChatMessageResponse] = Field(default_factory=list)
+
+
+class ChatSendResponse(BaseModel):
+    user_message: ChatMessageResponse
+    assistant_message: ChatMessageResponse
 
 class ChatListItem(BaseModel):
     id: str

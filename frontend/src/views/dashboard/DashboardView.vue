@@ -16,6 +16,14 @@
           </div>
         </div>
         <StatsCardGrid :items="statsCards" />
+        <el-alert
+          v-if="errorMessage"
+          class="dashboard-view__alert"
+          type="warning"
+          show-icon
+          :closable="false"
+          :title="errorMessage"
+        />
       </div>
     </header>
 
@@ -79,8 +87,8 @@ import { appRoute, normalizeAppRouteTarget } from '@/router'
 import { useRouteTransition } from '@/composables/useRouteTransition'
 import type { HotspotSummaryResponse } from '@/types/insight'
 import DashboardGrid from '@/components/dashboard/DashboardGrid.vue'
-import AlertBubble from '@/components/dashboard/AlertBubble.vue'
-import AIPopupPanel from '@/components/dashboard/AIPopupPanel.vue'
+// import AlertBubble from '@/components/dashboard/AlertBubble.vue'
+// import AIPopupPanel from '@/components/dashboard/AIPopupPanel.vue'
 import FloatingQuickActions from '@/components/dashboard/FloatingQuickActions.vue'
 import MediaRankingRail from '@/components/dashboard/MediaRankingRail.vue'
 import HotspotCard from '@/components/dashboard/HotspotCard.vue'
@@ -98,6 +106,8 @@ const isAdmin = computed(() => isAdminUsername(authStore.username))
 
 const recentNews = ref<NewsItem[]>([])
 const loading = ref(false)
+const errorMessage = ref('')
+let summaryRequestId = 0
 const stats = reactive({
   total: 0,
   fake: 0,
@@ -287,27 +297,55 @@ function onAlertAction(path?: string) {
 }
 
 async function loadSummary() {
+  const requestId = ++summaryRequestId
   loading.value = true
+  errorMessage.value = ''
   try {
-    const [newsList, hotspotSummaryResponse] = await Promise.all([
+    const [newsListResult, hotspotResult] = await Promise.allSettled([
       newsApi.list({ page: 1, perPage: 20 }),
       hotspotApi.getSummary(),
     ])
 
-    recentNews.value = newsList.items || []
-    hotspotSummary.provinces = hotspotSummaryResponse.provinces || []
-    hotspotSummary.total_news = hotspotSummaryResponse.total_news || 0
-    hotspotSummary.total_fake = hotspotSummaryResponse.total_fake || 0
-    hotspotSummary.updated_at = hotspotSummaryResponse.updated_at || ''
+    if (requestId !== summaryRequestId) {
+      return
+    }
 
-    stats.total = hotspotSummary.total_news
-    stats.fake = hotspotSummary.total_fake
-    stats.verified = recentNews.value.filter((item) => item.credibility?.verified).length
+    const failures: string[] = []
+
+    if (newsListResult.status === 'fulfilled') {
+      const newsList = newsListResult.value
+      recentNews.value = newsList.items || []
+      stats.verified = recentNews.value.filter((item) => item.credibility?.verified).length
+    } else {
+      failures.push('案例数据')
+    }
+
+    if (hotspotResult.status === 'fulfilled') {
+      const hotspotSummaryResponse = hotspotResult.value
+      hotspotSummary.provinces = hotspotSummaryResponse.provinces || []
+      hotspotSummary.total_news = hotspotSummaryResponse.total_news || 0
+      hotspotSummary.total_fake = hotspotSummaryResponse.total_fake || 0
+      hotspotSummary.updated_at = hotspotSummaryResponse.updated_at || ''
+      stats.total = hotspotSummary.total_news
+      stats.fake = hotspotSummary.total_fake
+    } else {
+      failures.push('热点数据')
+    }
+
     stats.pending = Math.max(stats.total - stats.verified, 0)
+    if (failures.length) {
+      errorMessage.value = `部分数据加载失败：${failures.join('、')}。已显示最近一次可用内容。`
+    }
   } catch (error) {
+    if (requestId !== summaryRequestId) {
+      return
+    }
     console.error(error)
+    errorMessage.value = '看板数据加载失败，已保留当前页面内容。'
   } finally {
-    loading.value = false
+    if (requestId === summaryRequestId) {
+      loading.value = false
+    }
   }
 }
 
@@ -321,6 +359,10 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.dashboard-view__alert {
+  margin-top: 4px;
 }
 
 .dashboard-hero,

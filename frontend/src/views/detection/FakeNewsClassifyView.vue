@@ -1,7 +1,7 @@
-﻿<template>
-  <div>
-    <h2>诈骗话术分类识别</h2>
-    <el-form label-position="top" style="margin-top: 16px; max-width: 600px">
+<template>
+  <div class="fake-news-classify-view">
+    <h2 v-if="!embedded">诈骗话术分类识别</h2>
+    <el-form label-position="top" class="fake-news-classify-view__form">
       <el-form-item label="新闻标题">
         <el-input v-model="form.title" placeholder="输入新闻标题" />
       </el-form-item>
@@ -41,6 +41,10 @@
 import { ref, reactive } from 'vue'
 import { detectionApi } from '@/api/detection'
 import { ElMessage } from 'element-plus'
+
+withDefaults(defineProps<{ embedded?: boolean }>(), {
+  embedded: false,
+})
 
 const form = reactive({ title: '', content: '' })
 const result = ref<any>(null)
@@ -90,5 +94,3 @@ async function detect() {
   margin-top: 16px;
 }
 </style>
-
-

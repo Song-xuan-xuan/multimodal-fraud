@@ -18,6 +18,29 @@ class RecentDetection(BaseModel):
     created_at: str = ""
 
 
+class RecentReport(BaseModel):
+    report_id: str = ""
+    type: str = ""
+    description: str = ""
+    status: str = ""
+    created_at: str = ""
+
+
+class RecentEvidence(BaseModel):
+    id: int = 0
+    news_id: str = ""
+    content: str = ""
+    status: str = ""
+    submitted_at: str = ""
+
+
+class RecentChat(BaseModel):
+    id: str = ""
+    title: str = ""
+    message_count: int = 0
+    created_at: str = ""
+
+
 class BehaviorStats(BaseModel):
     detection_count: int = 0
     fact_check_count: int = 0
@@ -25,6 +48,9 @@ class BehaviorStats(BaseModel):
     evidence_count: int = 0
     chat_count: int = 0
     recent_detections: list[RecentDetection] = Field(default_factory=list)
+    recent_reports: list[RecentReport] = Field(default_factory=list)
+    recent_evidences: list[RecentEvidence] = Field(default_factory=list)
+    recent_chats: list[RecentChat] = Field(default_factory=list)
 
 
 class ProfileData(BaseModel):
@@ -35,10 +61,18 @@ class ProfileData(BaseModel):
     concern_tags: list[str] = Field(default_factory=list)
 
 
+class RoleDefenseStrategy(BaseModel):
+    role_label: str = ""
+    risk_summary: str = ""
+    high_risk_types: list[str] = Field(default_factory=list)
+    defense_tips: list[str] = Field(default_factory=list)
+
+
 class UserProfileResponse(BaseModel):
     username: str = ""
     profile: ProfileData = Field(default_factory=ProfileData)
     stats: BehaviorStats = Field(default_factory=BehaviorStats)
+    role_defense: RoleDefenseStrategy = Field(default_factory=RoleDefenseStrategy)
 
 
 class SuggestionResponse(BaseModel):

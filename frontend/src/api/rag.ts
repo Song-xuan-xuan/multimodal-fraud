@@ -8,7 +8,11 @@ export interface RagHealthResponse {
 
 export const ragApi = {
   async ask(question: string, sessionId?: string) {
-    const { data } = await api.post('/rag/ask', { question, session_id: sessionId })
+    const { data } = await api.post(
+      '/rag/ask',
+      { question, session_id: sessionId },
+      { timeout: 120000 },
+    )
     return data as { answer: string; sources: RagSource[]; session_id: string }
   },
   async health() {

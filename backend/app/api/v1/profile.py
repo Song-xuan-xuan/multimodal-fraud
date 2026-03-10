@@ -1,4 +1,4 @@
-"""Profile API — user profile and personalized suggestions."""
+"""Profile API — user profile, role defense, and personalized suggestions."""
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,6 +11,7 @@ from app.schemas.profile import (
 )
 from app.services.profile_service import (
     _profile_to_data,
+    build_role_defense,
     generate_suggestions,
     get_behavior_stats,
     get_or_create_profile,
@@ -28,10 +29,12 @@ async def get_my_profile(
     profile = await get_or_create_profile(db, user.id)
     profile_data = _profile_to_data(profile)
     stats = await get_behavior_stats(db, user.username, user.id)
+    role_defense = build_role_defense(profile_data)
     return UserProfileResponse(
         username=user.username,
         profile=profile_data,
         stats=stats,
+        role_defense=role_defense,
     )
 
 
@@ -44,10 +47,12 @@ async def update_my_profile(
     profile = await update_profile(db, user.id, data)
     profile_data = _profile_to_data(profile)
     stats = await get_behavior_stats(db, user.username, user.id)
+    role_defense = build_role_defense(profile_data)
     return UserProfileResponse(
         username=user.username,
         profile=profile_data,
         stats=stats,
+        role_defense=role_defense,
     )
 
 

@@ -300,6 +300,33 @@ onMounted(async () => {
   justify-content: flex-end;
   margin-top: 12px;
 }
+
+/* Dark theme table overrides */
+.report-view :deep(.el-table) {
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: rgba(14, 28, 54, 0.6);
+  --el-table-header-bg-color: rgba(76, 201, 255, 0.06);
+  --el-table-row-hover-bg-color: rgba(76, 201, 255, 0.10);
+  --el-table-border-color: rgba(76, 201, 255, 0.08);
+  --el-table-header-text-color: var(--tech-text-secondary, #a0aec0);
+  --el-table-text-color: var(--tech-text-regular, #ccc);
+  color: var(--tech-text-regular, #ccc);
+}
+
+.report-view :deep(.el-table__row--striped td.el-table__cell) {
+  background: rgba(76, 201, 255, 0.04) !important;
+}
+
+.report-view :deep(.el-table__inner-wrapper::before) {
+  background-color: rgba(76, 201, 255, 0.08);
+}
+
+/* Dark theme card overrides */
+.report-view :deep(.el-card) {
+  --el-card-bg-color: rgba(10, 21, 39, 0.96);
+  border-color: rgba(76, 201, 255, 0.10);
+  color: var(--tech-text-regular, #ccc);
+}
 </style>
 
 

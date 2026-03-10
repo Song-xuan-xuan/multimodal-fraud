@@ -1,6 +1,6 @@
 from typing import Any, Dict, List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class NewsListQuery(BaseModel):
@@ -17,8 +17,23 @@ class CredibilityDimensionScores(BaseModel):
     logic: float = 0.0
     propagation: float = 0.0
     AI: float = 0.0
-    content1: str = ""
-    content2: str = ""
+    content1: float = 0.0
+    content2: float = 0.0
+
+    @field_validator("source", "content", "logic", "propagation", "AI", "content1", "content2", mode="before")
+    @classmethod
+    def coerce_to_float(cls, v: object) -> float:
+        if isinstance(v, (int, float)):
+            return float(v)
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                return 0.0
+            try:
+                return float(v)
+            except ValueError:
+                return 0.0
+        return 0.0
 
 
 class CredibilityInfo(BaseModel):
@@ -186,3 +201,10 @@ class NewsTimelineResponse(BaseModel):
     title: str = ""
     timeline: List[TimelineEvent] = Field(default_factory=list)
     platform_similarity: Dict[str, Any] = Field(default_factory=dict)
+
+
+class KnowledgeGraphResponse(BaseModel):
+    seed_news_id: str = ""
+    seed_title: str = ""
+    nodes: List[RelationNode] = Field(default_factory=list)
+    edges: List[RelationEdge] = Field(default_factory=list)

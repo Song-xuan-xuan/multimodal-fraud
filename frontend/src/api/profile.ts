@@ -14,6 +14,29 @@ export interface RecentDetection {
   created_at: string
 }
 
+export interface RecentReport {
+  report_id: string
+  type: string
+  description: string
+  status: string
+  created_at: string
+}
+
+export interface RecentEvidence {
+  id: number
+  news_id: string
+  content: string
+  status: string
+  submitted_at: string
+}
+
+export interface RecentChat {
+  id: string
+  title: string
+  message_count: number
+  created_at: string
+}
+
 export interface BehaviorStats {
   detection_count: number
   fact_check_count: number
@@ -21,12 +44,23 @@ export interface BehaviorStats {
   evidence_count: number
   chat_count: number
   recent_detections: RecentDetection[]
+  recent_reports: RecentReport[]
+  recent_evidences: RecentEvidence[]
+  recent_chats: RecentChat[]
+}
+
+export interface RoleDefenseStrategy {
+  role_label: string
+  risk_summary: string
+  high_risk_types: string[]
+  defense_tips: string[]
 }
 
 export interface UserProfileResponse {
   username: string
   profile: ProfileData
   stats: BehaviorStats
+  role_defense: RoleDefenseStrategy
 }
 
 export interface ProfileUpdatePayload {
@@ -55,5 +89,10 @@ export const profileApi = {
   async getSuggestions() {
     const { data } = await api.get<SuggestionResponse>('/profile/suggestions')
     return data
+  },
+
+  async withdrawReport(reportId: string) {
+    const { data } = await api.delete(`/report/withdraw/${reportId}`)
+    return data as { message: string; report_id: string }
   },
 }

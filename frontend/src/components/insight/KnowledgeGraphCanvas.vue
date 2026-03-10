@@ -103,7 +103,7 @@ async function renderGraph() {
         })),
       },
     ],
-  })
+  }, true)
 }
 
 function handleResize() {
@@ -121,7 +121,11 @@ watch(
 watch(
   () => props.loading,
   (loading) => {
-    if (!loading) {
+    if (loading) {
+      // v-if will destroy the canvas DOM; dispose the stale chart instance
+      chart?.dispose()
+      chart = null
+    } else {
       void renderGraph()
     }
   },

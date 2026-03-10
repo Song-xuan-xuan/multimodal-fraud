@@ -1,6 +1,6 @@
 <template>
   <div class="page-shell profile-view">
-    <!-- 区域 1: 用户画像卡 -->
+    <!-- 用户画像卡 -->
     <section class="profile-hero tech-panel">
       <div class="profile-hero__header">
         <div class="profile-avatar">
@@ -10,6 +10,7 @@
           <h2>{{ authStore.username }}</h2>
           <div class="profile-hero__tags" v-if="hasProfile">
             <el-tag v-if="profileData.age_group" type="info" effect="dark" size="small">{{ profileData.age_group }}</el-tag>
+            <el-tag v-if="profileData.gender && profileData.gender !== '保密'" effect="dark" size="small">{{ profileData.gender }}</el-tag>
             <el-tag v-if="profileData.occupation" type="info" effect="dark" size="small">{{ profileData.occupation }}</el-tag>
             <el-tag v-if="profileData.region" type="info" effect="dark" size="small">{{ profileData.region }}</el-tag>
           </div>
@@ -31,67 +32,189 @@
       </div>
     </section>
 
-    <!-- 区域 2: 行为统计仪表盘 -->
-    <section class="profile-stats tech-panel">
-      <p class="profile-stats__eyebrow">行为统计</p>
-      <div class="profile-stats__body">
-        <div class="profile-stats__cards">
-          <div class="profile-stat-card tech-surface" v-for="card in statCards" :key="card.label">
-            <span class="profile-stat-card__value">{{ card.value }}</span>
-            <span class="profile-stat-card__label">{{ card.label }}</span>
+    <!-- 主体 Tabs -->
+    <el-tabs v-model="activeTab" class="profile-tabs">
+      <!-- Tab 1: 角色防护策略 -->
+      <el-tab-pane label="角色防护策略" name="defense">
+        <section class="profile-defense tech-panel" v-if="hasProfile">
+          <div class="profile-defense__head">
+            <div>
+              <el-tag type="warning" effect="dark" size="large">{{ roleDefense.role_label }}</el-tag>
+              <p class="profile-defense__summary">{{ roleDefense.risk_summary }}</p>
+            </div>
           </div>
-        </div>
-        <div class="profile-stats__radar">
-          <div ref="radarChartRef" class="profile-stats__radar-chart"></div>
-        </div>
-      </div>
-      <div class="profile-recent" v-if="behaviorStats.recent_detections.length">
-        <p class="profile-recent__title">最近检测记录</p>
-        <div class="profile-recent__list">
-          <div
-            class="profile-recent__item tech-surface"
-            v-for="(item, idx) in behaviorStats.recent_detections"
-            :key="idx"
-          >
-            <el-tag
-              :type="riskTagType(item.risk_level)"
-              effect="dark"
-              size="small"
-            >{{ detectionTypeLabel(item.detection_type) }}</el-tag>
-            <span class="profile-recent__risk">{{ riskLabel(item.risk_level) }}</span>
-            <span class="profile-recent__time">{{ formatTime(item.created_at) }}</span>
+          <div class="profile-defense__risks">
+            <p class="profile-defense__section-title">高风险诈骗类型</p>
+            <div class="profile-defense__risk-tags">
+              <el-tag
+                v-for="rt in roleDefense.high_risk_types"
+                :key="rt"
+                type="danger"
+                effect="dark"
+                size="small"
+              >{{ rt }}</el-tag>
+            </div>
           </div>
-        </div>
-      </div>
-    </section>
+          <div class="profile-defense__tips">
+            <p class="profile-defense__section-title">差异化防御策略</p>
+            <div class="profile-defense__tip-list">
+              <div
+                class="profile-defense__tip tech-surface"
+                v-for="(tip, idx) in roleDefense.defense_tips"
+                :key="idx"
+              >
+                <span class="profile-defense__tip-num">{{ idx + 1 }}</span>
+                <p>{{ tip }}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="profile-defense-empty tech-panel" v-else>
+          <p>完善个人画像后，系统将根据您的角色特点生成差异化的防护策略</p>
+          <el-button type="primary" @click="showEditDialog = true">去完善</el-button>
+        </section>
+      </el-tab-pane>
 
-    <!-- 区域 3: 个性化反诈建议 -->
-    <section class="profile-suggestions tech-panel">
-      <div class="profile-suggestions__head">
-        <div>
-          <p class="profile-suggestions__eyebrow">个性化防护建议</p>
-          <h3>基于画像与行为的智能推荐</h3>
+      <!-- Tab 2: 我的活动 -->
+      <el-tab-pane label="我的活动" name="activity">
+        <div class="profile-activity">
+          <!-- 统计概览 + 雷达图 -->
+          <section class="profile-stats tech-panel">
+            <p class="profile-section-eyebrow">行为统计</p>
+            <div class="profile-stats__body">
+              <div class="profile-stats__cards">
+                <div class="profile-stat-card tech-surface" v-for="card in statCards" :key="card.label">
+                  <span class="profile-stat-card__value">{{ card.value }}</span>
+                  <span class="profile-stat-card__label">{{ card.label }}</span>
+                </div>
+              </div>
+              <div class="profile-stats__radar">
+                <div ref="radarChartRef" class="profile-stats__radar-chart"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 举报记录 -->
+          <section class="profile-section tech-panel" v-if="behaviorStats.recent_reports.length">
+            <p class="profile-section-eyebrow">我的举报 ({{ behaviorStats.report_count }})</p>
+            <div class="profile-section__list">
+              <div
+                class="profile-activity-item tech-surface"
+                v-for="r in behaviorStats.recent_reports"
+                :key="r.report_id"
+              >
+                <div class="profile-activity-item__main">
+                  <el-tag :type="reportStatusType(r.status)" effect="dark" size="small">{{ reportStatusLabel(r.status) }}</el-tag>
+                  <span class="profile-activity-item__type">{{ r.type }}</span>
+                  <span class="profile-activity-item__desc">{{ r.description }}</span>
+                </div>
+                <div class="profile-activity-item__actions">
+                  <span class="profile-activity-item__time">{{ formatTime(r.created_at) }}</span>
+                  <el-button
+                    v-if="r.status === 'pending'"
+                    type="danger"
+                    text
+                    size="small"
+                    @click="handleWithdraw(r.report_id)"
+                  >撤回</el-button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 检测记录 -->
+          <section class="profile-section tech-panel" v-if="behaviorStats.recent_detections.length">
+            <p class="profile-section-eyebrow">检测记录 ({{ behaviorStats.detection_count }})</p>
+            <div class="profile-section__list">
+              <div
+                class="profile-activity-item tech-surface"
+                v-for="(item, idx) in behaviorStats.recent_detections"
+                :key="idx"
+              >
+                <div class="profile-activity-item__main">
+                  <el-tag :type="riskTagType(item.risk_level)" effect="dark" size="small">
+                    {{ detectionTypeLabel(item.detection_type) }}
+                  </el-tag>
+                  <span class="profile-activity-item__desc">{{ riskLabel(item.risk_level) }}</span>
+                </div>
+                <span class="profile-activity-item__time">{{ formatTime(item.created_at) }}</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 证据贡献 -->
+          <section class="profile-section tech-panel" v-if="behaviorStats.recent_evidences.length">
+            <p class="profile-section-eyebrow">证据贡献 ({{ behaviorStats.evidence_count }})</p>
+            <div class="profile-section__list">
+              <div
+                class="profile-activity-item tech-surface"
+                v-for="e in behaviorStats.recent_evidences"
+                :key="e.id"
+              >
+                <div class="profile-activity-item__main">
+                  <el-tag :type="reportStatusType(e.status)" effect="dark" size="small">{{ reportStatusLabel(e.status) }}</el-tag>
+                  <span class="profile-activity-item__desc">{{ e.content }}</span>
+                </div>
+                <span class="profile-activity-item__time">{{ formatTime(e.submitted_at) }}</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- AI 对话记录 -->
+          <section class="profile-section tech-panel" v-if="behaviorStats.recent_chats.length">
+            <p class="profile-section-eyebrow">AI 咨询 ({{ behaviorStats.chat_count }})</p>
+            <div class="profile-section__list">
+              <div
+                class="profile-activity-item tech-surface"
+                v-for="c in behaviorStats.recent_chats"
+                :key="c.id"
+              >
+                <div class="profile-activity-item__main">
+                  <el-tag type="info" effect="dark" size="small">{{ c.message_count }} 条消息</el-tag>
+                  <span class="profile-activity-item__desc">{{ c.title }}</span>
+                </div>
+                <span class="profile-activity-item__time">{{ formatTime(c.created_at) }}</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 空状态 -->
+          <section class="profile-section tech-panel" v-if="isActivityEmpty">
+            <p class="profile-activity-empty">暂无活动记录，快去使用检测、举报、AI 咨询等功能吧</p>
+          </section>
         </div>
-        <el-button :loading="suggestionsLoading" @click="loadSuggestions">刷新建议</el-button>
-      </div>
-      <div v-if="!hasProfile" class="profile-suggestions__empty">
-        <p>请先完善个人画像，即可获取个性化反诈建议</p>
-        <el-button type="primary" @click="showEditDialog = true">去完善</el-button>
-      </div>
-      <div v-else-if="suggestionsLoading" class="profile-suggestions__loading">
-        <el-skeleton :rows="4" animated />
-      </div>
-      <div v-else class="profile-suggestions__list">
-        <div
-          class="profile-suggestion-card tech-surface"
-          v-for="(s, idx) in suggestions"
-          :key="idx"
-        >
-          <span class="profile-suggestion-card__icon">🛡️</span>
-          <p>{{ s }}</p>
-        </div>
-      </div>
-    </section>
+      </el-tab-pane>
+
+      <!-- Tab 3: 个性化建议 -->
+      <el-tab-pane label="个性化建议" name="suggestions">
+        <section class="profile-suggestions tech-panel">
+          <div class="profile-suggestions__head">
+            <div>
+              <p class="profile-section-eyebrow">LLM 智能推荐</p>
+              <h3>基于画像与行为的个性化反诈建议</h3>
+            </div>
+            <el-button :loading="suggestionsLoading" @click="loadSuggestions">刷新建议</el-button>
+          </div>
+          <div v-if="!hasProfile" class="profile-suggestions__empty">
+            <p>请先完善个人画像，即可获取个性化反诈建议</p>
+            <el-button type="primary" @click="showEditDialog = true">去完善</el-button>
+          </div>
+          <div v-else-if="suggestionsLoading" class="profile-suggestions__loading">
+            <el-skeleton :rows="4" animated />
+          </div>
+          <div v-else class="profile-suggestions__list">
+            <div
+              class="profile-suggestion-card tech-surface"
+              v-for="(s, idx) in suggestions"
+              :key="idx"
+            >
+              <span class="profile-suggestion-card__num">{{ idx + 1 }}</span>
+              <p>{{ s }}</p>
+            </div>
+          </div>
+        </section>
+      </el-tab-pane>
+    </el-tabs>
 
     <!-- 画像编辑弹窗 -->
     <el-dialog
@@ -151,13 +274,14 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import * as echarts from 'echarts'
 import { useAuthStore } from '@/stores/auth'
 import {
   profileApi,
   type ProfileData,
   type BehaviorStats,
+  type RoleDefenseStrategy,
   type ProfileUpdatePayload,
 } from '@/api/profile'
 
@@ -165,6 +289,8 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 // --- State ---
+const activeTab = ref('defense')
+
 const profileData = reactive<ProfileData>({
   age_group: null,
   gender: null,
@@ -180,13 +306,22 @@ const behaviorStats = reactive<BehaviorStats>({
   evidence_count: 0,
   chat_count: 0,
   recent_detections: [],
+  recent_reports: [],
+  recent_evidences: [],
+  recent_chats: [],
+})
+
+const roleDefense = reactive<RoleDefenseStrategy>({
+  role_label: '',
+  risk_summary: '',
+  high_risk_types: [],
+  defense_tips: [],
 })
 
 const suggestions = ref<string[]>([])
 const suggestionsLoading = ref(false)
 const showEditDialog = ref(false)
 const saving = ref(false)
-const loading = ref(true)
 
 const editForm = reactive<{
   age_group: string | null
@@ -215,8 +350,16 @@ const statCards = computed(() => [
   { label: '风险检测', value: behaviorStats.detection_count },
   { label: '事实核查', value: behaviorStats.fact_check_count },
   { label: '线索举报', value: behaviorStats.report_count },
-  { label: '社区贡献', value: behaviorStats.evidence_count + behaviorStats.chat_count },
+  { label: '证据贡献', value: behaviorStats.evidence_count },
+  { label: 'AI 咨询', value: behaviorStats.chat_count },
 ])
+
+const isActivityEmpty = computed(() =>
+  !behaviorStats.recent_detections.length &&
+  !behaviorStats.recent_reports.length &&
+  !behaviorStats.recent_evidences.length &&
+  !behaviorStats.recent_chats.length,
+)
 
 // --- Options ---
 const concernTagOptions = [
@@ -234,32 +377,32 @@ const regionOptions = [
   '香港', '澳门', '台湾',
 ]
 
+// --- Helpers ---
 const detectionTypeMap: Record<string, string> = {
-  'ai-text': 'AI文本',
-  'ai-image': 'AI图像',
-  'audio-risk': '语音风险',
-  'multimodal': '多模态',
-  'news': '新闻检测',
-  'aggregate': '综合分析',
-  'url': 'URL检测',
-  'file': '文件检测',
-  'segments': '分段检测',
+  'ai-text': 'AI文本', 'ai-image': 'AI图像', 'audio-risk': '语音风险',
+  'multimodal': '多模态', 'news': '新闻检测', 'aggregate': '综合分析',
+  'url': 'URL检测', 'file': '文件检测', 'segments': '分段检测',
 }
-
-function detectionTypeLabel(type: string) {
-  return detectionTypeMap[type] || type
-}
+function detectionTypeLabel(type: string) { return detectionTypeMap[type] || type }
 
 function riskLabel(level: string | null) {
   if (level === 'high') return '高风险'
   if (level === 'medium') return '中风险'
   return '低风险'
 }
-
 function riskTagType(level: string | null) {
   if (level === 'high') return 'danger'
   if (level === 'medium') return 'warning'
   return 'success'
+}
+
+function reportStatusLabel(status: string) {
+  const map: Record<string, string> = { pending: '待审核', approved: '已通过', rejected: '已驳回' }
+  return map[status] || status
+}
+function reportStatusType(status: string) {
+  const map: Record<string, string> = { pending: 'warning', approved: 'success', rejected: 'danger' }
+  return (map[status] || 'info') as 'warning' | 'success' | 'danger' | 'info'
 }
 
 function formatTime(iso: string) {
@@ -270,11 +413,8 @@ function formatTime(iso: string) {
 
 function toggleConcernTag(tag: string) {
   const idx = editForm.concern_tags.indexOf(tag)
-  if (idx >= 0) {
-    editForm.concern_tags.splice(idx, 1)
-  } else {
-    editForm.concern_tags.push(tag)
-  }
+  if (idx >= 0) editForm.concern_tags.splice(idx, 1)
+  else editForm.concern_tags.push(tag)
 }
 
 // --- ECharts radar ---
@@ -283,85 +423,53 @@ let radarChart: echarts.ECharts | null = null
 
 function renderRadar() {
   if (!radarChartRef.value) return
-  if (!radarChart) {
-    radarChart = echarts.init(radarChartRef.value)
-  }
+  if (!radarChart) radarChart = echarts.init(radarChartRef.value)
   const maxVal = Math.max(
-    behaviorStats.detection_count,
-    behaviorStats.fact_check_count,
-    behaviorStats.report_count,
-    behaviorStats.evidence_count,
-    behaviorStats.chat_count,
-    1,
+    behaviorStats.detection_count, behaviorStats.fact_check_count,
+    behaviorStats.report_count, behaviorStats.evidence_count,
+    behaviorStats.chat_count, 1,
   )
   radarChart.setOption({
     radar: {
       indicator: [
-        { name: '检测活跃度', max: maxVal },
-        { name: '核查参与', max: maxVal },
-        { name: '举报贡献', max: maxVal },
-        { name: '社区互动', max: maxVal },
+        { name: '检测活跃度', max: maxVal }, { name: '核查参与', max: maxVal },
+        { name: '举报贡献', max: maxVal }, { name: '证据互动', max: maxVal },
         { name: 'AI咨询', max: maxVal },
       ],
-      shape: 'polygon',
-      splitNumber: 4,
-      axisName: {
-        color: 'var(--tech-text-secondary, #a0aec0)',
-        fontSize: 12,
-      },
-      splitLine: {
-        lineStyle: { color: 'rgba(255,255,255,0.08)' },
-      },
-      splitArea: {
-        areaStyle: { color: ['rgba(0,0,0,0)', 'rgba(255,255,255,0.02)'] },
-      },
-      axisLine: {
-        lineStyle: { color: 'rgba(255,255,255,0.1)' },
-      },
+      shape: 'polygon', splitNumber: 4,
+      axisName: { color: 'var(--tech-text-secondary, #a0aec0)', fontSize: 12 },
+      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } },
+      splitArea: { areaStyle: { color: ['rgba(0,0,0,0)', 'rgba(255,255,255,0.02)'] } },
+      axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
     },
-    series: [
-      {
-        type: 'radar',
-        data: [
-          {
-            value: [
-              behaviorStats.detection_count,
-              behaviorStats.fact_check_count,
-              behaviorStats.report_count,
-              behaviorStats.evidence_count,
-              behaviorStats.chat_count,
-            ],
-            name: '行为画像',
-            areaStyle: {
-              color: 'rgba(64, 158, 255, 0.25)',
-            },
-            lineStyle: {
-              color: '#409eff',
-              width: 2,
-            },
-            itemStyle: {
-              color: '#409eff',
-            },
-          },
+    series: [{
+      type: 'radar',
+      data: [{
+        value: [
+          behaviorStats.detection_count, behaviorStats.fact_check_count,
+          behaviorStats.report_count, behaviorStats.evidence_count,
+          behaviorStats.chat_count,
         ],
-      },
-    ],
+        name: '行为画像',
+        areaStyle: { color: 'rgba(64, 158, 255, 0.25)' },
+        lineStyle: { color: '#409eff', width: 2 },
+        itemStyle: { color: '#409eff' },
+      }],
+    }],
   })
 }
 
 // --- Data loading ---
 async function loadProfile() {
   try {
-    loading.value = true
     const res = await profileApi.getMe()
     Object.assign(profileData, res.profile)
     Object.assign(behaviorStats, res.stats)
+    Object.assign(roleDefense, res.role_defense)
     await nextTick()
-    renderRadar()
+    if (activeTab.value === 'activity') renderRadar()
   } catch {
     ElMessage.error('加载个人画像失败')
-  } finally {
-    loading.value = false
   }
 }
 
@@ -390,6 +498,7 @@ async function saveProfile() {
     const res = await profileApi.updateMe(payload)
     Object.assign(profileData, res.profile)
     Object.assign(behaviorStats, res.stats)
+    Object.assign(roleDefense, res.role_defense)
     showEditDialog.value = false
     ElMessage.success('画像已更新')
     await nextTick()
@@ -399,6 +508,21 @@ async function saveProfile() {
     ElMessage.error('保存失败')
   } finally {
     saving.value = false
+  }
+}
+
+async function handleWithdraw(reportId: string) {
+  try {
+    await ElMessageBox.confirm('确定要撤回这条举报吗？', '撤回确认', {
+      confirmButtonText: '确定撤回',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+    await profileApi.withdrawReport(reportId)
+    ElMessage.success('举报已撤回')
+    loadProfile()
+  } catch (e: unknown) {
+    if (e !== 'cancel') ElMessage.error('撤回失败')
   }
 }
 
@@ -418,16 +542,16 @@ watch(showEditDialog, (open) => {
   }
 })
 
-// Resize handler
-function handleResize() {
-  radarChart?.resize()
-}
+// Render radar when switching to activity tab
+watch(activeTab, (tab) => {
+  if (tab === 'activity') nextTick(() => renderRadar())
+  if (tab === 'suggestions' && !suggestions.value.length && hasProfile.value) loadSuggestions()
+})
+
+function handleResize() { radarChart?.resize() }
 
 onMounted(async () => {
   await loadProfile()
-  if (hasProfile.value) {
-    loadSuggestions()
-  }
   window.addEventListener('resize', handleResize)
 })
 </script>
@@ -438,240 +562,139 @@ onMounted(async () => {
   margin: 0 auto;
 }
 
-/* Hero / Profile Card */
-.profile-hero {
-  padding: 28px 32px;
-}
-
-.profile-hero__header {
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
-}
-
+/* Hero */
+.profile-hero { padding: 28px 32px; }
+.profile-hero__header { display: flex; align-items: flex-start; gap: 24px; }
 .profile-avatar {
-  flex-shrink: 0;
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
+  flex-shrink: 0; width: 72px; height: 72px; border-radius: 50%;
   background: linear-gradient(135deg, var(--tech-color-primary, #409eff) 0%, var(--tech-color-primary-strong, #1a73e8) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   box-shadow: 0 0 20px rgba(64, 158, 255, 0.3);
 }
-
-.profile-avatar__letter {
-  font-size: 32px;
-  font-weight: 700;
-  color: #fff;
-}
-
+.profile-avatar__letter { font-size: 32px; font-weight: 700; color: #fff; }
 .profile-hero__info {
-  flex: 1;
-  min-width: 0;
-
-  h2 {
-    margin: 0 0 8px;
-    font-size: 22px;
-    color: var(--tech-theme-text-primary, #fff);
-  }
+  flex: 1; min-width: 0;
+  h2 { margin: 0 0 8px; font-size: 22px; color: var(--tech-theme-text-primary, #fff); }
 }
+.profile-hero__tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.profile-hero__concern { display: flex; gap: 6px; flex-wrap: wrap; }
+.profile-hero__concern-tag { --el-tag-bg-color: rgba(64, 158, 255, 0.15); }
+.profile-hero__guide { color: var(--tech-theme-text-secondary, #a0aec0); font-size: 14px; margin: 4px 0 0; }
+.profile-hero__actions { flex-shrink: 0; display: flex; gap: 8px; }
 
-.profile-hero__tags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
+/* Tabs */
+.profile-tabs { margin-top: 4px; }
+.profile-tabs :deep(.el-tabs__header) { padding: 0 16px; }
+
+/* Shared section styling */
+.profile-section-eyebrow {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--tech-theme-text-secondary, #a0aec0); margin: 0 0 16px;
 }
+.profile-section { padding: 24px 32px; }
 
-.profile-hero__concern {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.profile-hero__concern-tag {
-  --el-tag-bg-color: rgba(64, 158, 255, 0.15);
-}
-
-.profile-hero__guide {
-  color: var(--tech-theme-text-secondary, #a0aec0);
-  font-size: 14px;
-  margin: 4px 0 0;
-}
-
-.profile-hero__actions {
-  flex-shrink: 0;
-  display: flex;
-  gap: 8px;
-}
-
-/* Stats Section */
-.profile-stats {
-  padding: 24px 32px;
-}
-
-.profile-stats__eyebrow {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--tech-theme-text-secondary, #a0aec0);
-  margin: 0 0 16px;
-}
-
-.profile-stats__body {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.profile-stats__cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.profile-stat-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px 12px;
-  text-align: center;
-}
-
-.profile-stat-card__value {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--tech-theme-text-primary, #fff);
-  line-height: 1.2;
-}
-
-.profile-stat-card__label {
-  font-size: 13px;
-  color: var(--tech-theme-text-secondary, #a0aec0);
-  margin-top: 4px;
-}
-
-.profile-stats__radar-chart {
-  width: 100%;
-  height: 240px;
-}
-
-/* Recent detections */
-.profile-recent {
-  margin-top: 20px;
-}
-
-.profile-recent__title {
-  font-size: 13px;
-  color: var(--tech-theme-text-secondary, #a0aec0);
-  margin: 0 0 10px;
-}
-
-.profile-recent__list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.profile-recent__item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-}
-
-.profile-recent__risk {
-  font-size: 13px;
+/* Defense tab */
+.profile-defense { padding: 24px 32px; }
+.profile-defense__head { margin-bottom: 20px; }
+.profile-defense__summary {
+  margin: 10px 0 0; font-size: 14px; line-height: 1.6;
   color: var(--tech-theme-text-regular, #ccc);
 }
+.profile-defense__section-title {
+  font-size: 13px; font-weight: 600; margin: 0 0 10px;
+  color: var(--tech-theme-text-primary, #fff);
+}
+.profile-defense__risks { margin-bottom: 24px; }
+.profile-defense__risk-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.profile-defense__tip-list { display: flex; flex-direction: column; gap: 8px; }
+.profile-defense__tip {
+  display: flex; align-items: flex-start; gap: 14px; padding: 14px 20px;
+  p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--tech-theme-text-regular, #ccc); }
+}
+.profile-defense__tip-num {
+  flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(64, 158, 255, 0.2); color: #409eff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+}
+.profile-defense-empty {
+  padding: 48px 32px; text-align: center;
+  p { color: var(--tech-theme-text-secondary, #a0aec0); margin: 0 0 16px; }
+}
 
-.profile-recent__time {
-  margin-left: auto;
-  font-size: 12px;
-  color: var(--tech-theme-text-tertiary, #718096);
+/* Stats */
+.profile-stats { padding: 24px 32px; }
+.profile-stats__body { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.profile-stats__cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.profile-stat-card {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 8px; text-align: center;
+}
+.profile-stat-card__value {
+  font-size: 24px; font-weight: 700; line-height: 1.2;
+  color: var(--tech-theme-text-primary, #fff);
+}
+.profile-stat-card__label {
+  font-size: 12px; margin-top: 4px;
+  color: var(--tech-theme-text-secondary, #a0aec0);
+}
+.profile-stats__radar-chart { width: 100%; height: 220px; }
+
+/* Activity items */
+.profile-section__list { display: flex; flex-direction: column; gap: 6px; }
+.profile-activity-item {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 10px 16px;
+}
+.profile-activity-item__main {
+  display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;
+}
+.profile-activity-item__type {
+  font-size: 13px; color: var(--tech-theme-text-primary, #fff); flex-shrink: 0;
+}
+.profile-activity-item__desc {
+  font-size: 13px; color: var(--tech-theme-text-regular, #ccc);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.profile-activity-item__actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.profile-activity-item__time {
+  font-size: 12px; color: var(--tech-theme-text-tertiary, #718096); flex-shrink: 0;
+}
+.profile-activity-empty {
+  text-align: center; padding: 32px 0;
+  color: var(--tech-theme-text-secondary, #a0aec0);
 }
 
 /* Suggestions */
-.profile-suggestions {
-  padding: 24px 32px;
-}
-
+.profile-suggestions { padding: 24px 32px; }
 .profile-suggestions__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-
-  h3 {
-    margin: 4px 0 0;
-    font-size: 16px;
-    color: var(--tech-theme-text-primary, #fff);
-  }
+  display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;
+  h3 { margin: 4px 0 0; font-size: 16px; color: var(--tech-theme-text-primary, #fff); }
 }
-
-.profile-suggestions__eyebrow {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--tech-theme-text-secondary, #a0aec0);
-  margin: 0;
-}
-
 .profile-suggestions__empty {
-  text-align: center;
-  padding: 40px 0;
+  text-align: center; padding: 40px 0;
   color: var(--tech-theme-text-secondary, #a0aec0);
 }
-
-.profile-suggestions__list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
+.profile-suggestions__list { display: flex; flex-direction: column; gap: 10px; }
 .profile-suggestion-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px 20px;
-
-  p {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--tech-theme-text-regular, #ccc);
-  }
+  display: flex; align-items: flex-start; gap: 14px; padding: 16px 20px;
+  p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--tech-theme-text-regular, #ccc); }
+}
+.profile-suggestion-card__num {
+  flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(103, 194, 58, 0.2); color: #67c23a;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
 }
 
-.profile-suggestion-card__icon {
-  flex-shrink: 0;
-  font-size: 20px;
-  line-height: 1.4;
-}
-
-/* Edit dialog tags */
-.profile-edit__tags {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
+/* Edit dialog */
+.profile-edit__tags { display: flex; gap: 8px; flex-wrap: wrap; }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .profile-hero__header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .profile-hero__actions {
-    justify-content: center;
-  }
-
-  .profile-stats__body {
-    grid-template-columns: 1fr;
-  }
+  .profile-hero__header { flex-direction: column; align-items: center; text-align: center; }
+  .profile-hero__actions { justify-content: center; }
+  .profile-stats__body { grid-template-columns: 1fr; }
+  .profile-stats__cards { grid-template-columns: 1fr 1fr; }
 }
 </style>

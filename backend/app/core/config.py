@@ -34,7 +34,14 @@ class Settings(BaseSettings):
     ZHIPU_AUDIO_MODEL: str = "glm-asr-2512"
 
     SERPAPI_API_KEY: str = ""
+    SEARCH_API_KEY: str = ""
+    SEARCH_ENGINE_ID: str = ""
     IMAGE_API_KEY: str = ""
+
+    VISION_API_KEY: str = ""
+    VISION_BASE_URL: str = ""
+    VISION_MODEL: str = ""
+    VISION_TEMPERATURE: float = 0.1
 
     EMBEDDING_MODEL: str = "BAAI/bge-small-zh-v1.5"
     EMBEDDING_DEVICE: str = "cuda"

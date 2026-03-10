@@ -3,12 +3,12 @@
     <PageHero
       eyebrow="专题洞察"
       title="知识图谱洞察"
-      description="围绕种子新闻构建传播关系图谱，统一专题页的页头、工具栏与图谱容器视觉。"
+      description="选择任意新闻作为种子，向外展开关联新闻与关键词网络，探索全局知识关系。"
     >
       <article class="hero-metric tech-panel">
-        <span>种子候选</span>
-        <strong>{{ seedOptions.length }}</strong>
-        <small>当前检索结果</small>
+        <span>新闻总量</span>
+        <strong>{{ seedTotal }}</strong>
+        <small>可选种子候选</small>
       </article>
       <article class="hero-metric tech-panel">
         <span>节点数量</span>
@@ -27,43 +27,77 @@
       </article>
     </PageHero>
 
+    <!-- 种子选择区 -->
     <section class="content-section tech-panel">
-      <SectionHeader eyebrow="种子检索" title="图谱条件设置" description="统一洞察页工具区，支持按关键词搜索并切换图谱种子新闻。">
+      <SectionHeader eyebrow="种子检索" title="选择种子新闻" description="搜索关键词筛选新闻，在列表中选择任意一条作为图谱中心。">
         <template #actions>
           <el-input
             v-model="keyword"
-            placeholder="按标题检索新闻"
+            placeholder="按标题搜索新闻"
             class="toolbar-keyword"
             clearable
-            @keyup.enter="searchSeeds"
-            @clear="searchSeeds"
+            @keyup.enter="searchSeeds(1)"
+            @clear="searchSeeds(1)"
           />
-          <el-button @click="searchSeeds" :loading="loadingSeeds">搜索</el-button>
+          <el-button @click="searchSeeds(1)" :loading="loadingSeeds">搜索</el-button>
         </template>
       </SectionHeader>
 
-      <el-select
-        v-model="selectedSeed"
-        filterable
-        clearable
-        placeholder="请选择新闻"
-        class="seed-select"
-        :loading="loadingSeeds"
-        @change="loadGraph"
+      <el-table
+        :data="seedOptions"
+        v-loading="loadingSeeds"
+        highlight-current-row
+        class="seed-table"
+        size="small"
+        @current-change="onSeedSelect"
       >
-        <el-option
-          v-for="item in seedOptions"
-          :key="item.news_id"
-          :label="`${item.title}（${item.platform || '-'}）`"
-          :value="item.news_id"
+        <el-table-column type="index" width="50" label="#" />
+        <el-table-column prop="title" label="标题" min-width="280" show-overflow-tooltip />
+        <el-table-column prop="label" label="标签" width="100" />
+        <el-table-column prop="platform" label="平台" width="100" />
+        <el-table-column label="操作" width="100">
+          <template #default="{ row }">
+            <el-button
+              type="primary"
+              text
+              size="small"
+              :disabled="selectedSeed === row.news_id"
+              @click="selectAndLoad(row)"
+            >{{ selectedSeed === row.news_id ? '当前' : '选为种子' }}</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <div class="seed-pager">
+        <el-pagination
+          background
+          layout="total, prev, pager, next, sizes"
+          :total="seedTotal"
+          :current-page="seedPage"
+          :page-size="seedPageSize"
+          :page-sizes="[10, 20, 50]"
+          @current-change="searchSeeds"
+          @size-change="onSeedPageSizeChange"
         />
-      </el-select>
+      </div>
     </section>
 
+    <!-- 图谱控制 + 画布 -->
     <section class="content-section tech-panel graph-section">
-      <SectionHeader eyebrow="关系图谱" title="图谱画布" description="统一专题页图表容器边界、空态和加载状态，用于承载复杂关系图谱。">
+      <SectionHeader eyebrow="关系图谱" title="图谱画布" description="以种子新闻为中心，BFS 展开多层关联关系与知识关键词。">
         <template #actions>
-          <el-tag v-if="graph.seed_title" type="info" effect="dark">{{ graph.seed_title }}</el-tag>
+          <el-tag v-if="graph.seed_title" type="info" effect="dark" class="seed-tag">{{ graph.seed_title }}</el-tag>
+          <el-select v-model="graphDepth" size="small" style="width: 120px" @change="reloadGraph">
+            <el-option :value="1" label="展开 1 层" />
+            <el-option :value="2" label="展开 2 层" />
+            <el-option :value="3" label="展开 3 层" />
+          </el-select>
+          <el-select v-model="graphMaxNodes" size="small" style="width: 140px" @change="reloadGraph">
+            <el-option :value="30" label="最多 30 节点" />
+            <el-option :value="60" label="最多 60 节点" />
+            <el-option :value="100" label="最多 100 节点" />
+            <el-option :value="150" label="最多 150 节点" />
+          </el-select>
         </template>
       </SectionHeader>
       <KnowledgeGraphCanvas :graph="graph" :loading="loadingGraph" />
@@ -89,7 +123,15 @@ const selectedSeed = ref('')
 const loadingSeeds = ref(false)
 const loadingGraph = ref(false)
 
+// Seed list with pagination
 const seedOptions = ref<SeedNewsOption[]>([])
+const seedTotal = ref(0)
+const seedPage = ref(1)
+const seedPageSize = ref(10)
+
+// Graph controls
+const graphDepth = ref(3)
+const graphMaxNodes = ref(150)
 
 const graph = reactive<KnowledgeGraphResponse>({
   seed_news_id: '',
@@ -98,11 +140,14 @@ const graph = reactive<KnowledgeGraphResponse>({
   edges: [],
 })
 
-async function searchSeeds() {
+async function searchSeeds(page = 1) {
   loadingSeeds.value = true
+  seedPage.value = page
   try {
-    const data = await graphApi.listSeedNews(keyword.value, 1, 30)
+    const data = await graphApi.listSeedNews(keyword.value, seedPage.value, seedPageSize.value)
     seedOptions.value = data.items
+    seedTotal.value = data.total
+    // Auto-select first if nothing selected yet
     if (!selectedSeed.value && data.items.length > 0) {
       selectedSeed.value = data.items[0].news_id
       await loadGraph()
@@ -112,6 +157,22 @@ async function searchSeeds() {
   } finally {
     loadingSeeds.value = false
   }
+}
+
+function onSeedPageSizeChange(size: number) {
+  seedPageSize.value = size
+  searchSeeds(1)
+}
+
+function onSeedSelect(row: SeedNewsOption | null) {
+  if (row && row.news_id !== selectedSeed.value) {
+    selectAndLoad(row)
+  }
+}
+
+function selectAndLoad(row: SeedNewsOption) {
+  selectedSeed.value = row.news_id
+  loadGraph()
 }
 
 async function loadGraph() {
@@ -125,7 +186,7 @@ async function loadGraph() {
 
   loadingGraph.value = true
   try {
-    const data = await graphApi.getKnowledgeGraph(selectedSeed.value)
+    const data = await graphApi.getKnowledgeGraph(selectedSeed.value, graphDepth.value, graphMaxNodes.value)
     graph.seed_news_id = data.seed_news_id
     graph.seed_title = data.seed_title
     graph.nodes = data.nodes
@@ -135,6 +196,10 @@ async function loadGraph() {
   } finally {
     loadingGraph.value = false
   }
+}
+
+function reloadGraph() {
+  if (selectedSeed.value) loadGraph()
 }
 
 onMounted(async () => {
@@ -182,8 +247,40 @@ onMounted(async () => {
   width: 260px;
 }
 
-.seed-select {
-  width: min(100%, 520px);
+/* Seed table dark theme */
+.seed-table {
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: rgba(14, 28, 54, 0.6);
+  --el-table-header-bg-color: rgba(76, 201, 255, 0.06);
+  --el-table-row-hover-bg-color: rgba(76, 201, 255, 0.10);
+  --el-table-border-color: rgba(76, 201, 255, 0.08);
+  --el-table-header-text-color: var(--tech-text-secondary, #a0aec0);
+  --el-table-text-color: var(--tech-text-regular, #ccc);
+  --el-table-current-row-bg-color: rgba(76, 201, 255, 0.12);
+}
+
+.seed-pager {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.seed-pager :deep(.el-pagination button),
+.seed-pager :deep(.el-pager li) {
+  background: rgba(76, 201, 255, 0.04);
+  border-color: rgba(76, 201, 255, 0.12);
+  color: var(--tech-text-secondary, #a0aec0);
+}
+
+.seed-pager :deep(.el-pager li.is-active) {
+  background: rgba(76, 201, 255, 0.14);
+  border-color: rgba(76, 201, 255, 0.24);
+  color: var(--tech-color-primary-strong, #4cc9ff);
+}
+
+.seed-tag {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .graph-section {
@@ -196,8 +293,7 @@ onMounted(async () => {
     padding: 20px;
   }
 
-  .toolbar-keyword,
-  .seed-select {
+  .toolbar-keyword {
     width: 100%;
   }
 }

@@ -41,8 +41,16 @@
     />
 
     <template v-else>
-      <section class="content-section tech-panel">
+      <!-- <section class="content-section tech-panel">
         <SectionHeader eyebrow="批量处置" title="批量审核操作" description="统一运营页指令区视觉，聚焦批量通过、驳回与说明输入。" />
+        <el-alert
+          v-if="queueErrorMessage"
+          type="warning"
+          :closable="false"
+          show-icon
+          class="workbench-inline-alert"
+          :title="queueErrorMessage"
+        />
         <div class="action-row">
           <el-input v-model="batchReason" placeholder="批量审核说明（可选）" clearable class="reason-input" />
           <el-button
@@ -62,10 +70,18 @@
             批量驳回 ({{ selectedPendingRows.length }})
           </el-button>
         </div>
-      </section>
+      </section> -->
 
       <section class="content-section tech-panel">
         <SectionHeader eyebrow="知识更新" title="反诈知识库管理" description="录入案例、审核知识条目，并在需要时重建向量索引。" />
+        <el-alert
+          v-if="knowledgeErrorMessage"
+          type="warning"
+          :closable="false"
+          show-icon
+          class="workbench-inline-alert"
+          :title="knowledgeErrorMessage"
+        />
         <div class="knowledge-form-grid">
           <el-input v-model="knowledgeForm.item_id" placeholder="条目标识，如 case_001" />
           <el-select v-model="knowledgeForm.item_type" placeholder="知识类型">
@@ -87,7 +103,7 @@
         </div>
         <div class="action-row">
           <el-button type="primary" :loading="createKnowledgeLoading" @click="submitKnowledge">新增知识条目</el-button>
-          <el-button type="success" :loading="rebuildLoading" @click="rebuildKnowledgeIndex">重建知识库索引</el-button>
+          <el-button type="success" :loading="rebuildLoading" @click="rebuildKnowledgeIndex">新增知识库索引</el-button>
         </div>
 
         <el-table :data="knowledgeItems" v-loading="knowledgeLoading" class="knowledge-table">
@@ -157,11 +173,15 @@ const batchReason = ref('')
 const queue = ref<AdminReviewItem[]>([])
 const reviewedByActions = ref<AdminReviewItem[]>([])
 const selectedPendingRows = ref<AdminReviewItem[]>([])
+const queueErrorMessage = ref('')
 
 const knowledgeItems = ref<KnowledgeItem[]>([])
 const knowledgeLoading = ref(false)
 const createKnowledgeLoading = ref(false)
 const rebuildLoading = ref(false)
+const knowledgeErrorMessage = ref('')
+let queueRequestId = 0
+let knowledgeRequestId = 0
 const knowledgeForm = reactive({
   item_id: '',
   item_type: 'case',
@@ -223,29 +243,67 @@ function resetKnowledgeForm() {
   knowledgeForm.adviceInput = ''
 }
 
+function nowIso() {
+  return new Date().toISOString()
+}
+
+function updateDemoKnowledge(itemId: number, status: 'approved' | 'rejected') {
+  knowledgeItems.value = knowledgeItems.value.map((entry) =>
+    entry.id === itemId
+      ? {
+          ...entry,
+          status,
+          reviewed_by: authStore.username || 'admin',
+          reviewed_reason: '本地审核结果',
+          updated_at: nowIso(),
+        }
+      : entry,
+  )
+}
+
 async function loadQueue() {
   if (!hasAccess.value) return
+  const requestId = ++queueRequestId
   loading.value = true
+  queueErrorMessage.value = ''
   try {
     const response = await adminReviewApi.listSubmissions()
+    if (requestId !== queueRequestId) {
+      return
+    }
     queue.value = response.items
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.detail || '加载审核队列失败')
+    if (requestId !== queueRequestId) {
+      return
+    }
+    queueErrorMessage.value = error?.response?.data?.detail || '加载审核队列失败，已保留当前列表。'
   } finally {
-    loading.value = false
+    if (requestId === queueRequestId) {
+      loading.value = false
+    }
   }
 }
 
 async function loadKnowledge() {
   if (!hasAccess.value) return
+  const requestId = ++knowledgeRequestId
   knowledgeLoading.value = true
+  knowledgeErrorMessage.value = ''
   try {
     const response = await knowledgeApi.list()
+    if (requestId !== knowledgeRequestId) {
+      return
+    }
     knowledgeItems.value = response.items
   } catch (error: any) {
-    ElMessage.error(error?.response?.data?.detail || '加载知识条目失败')
+    if (requestId !== knowledgeRequestId) {
+      return
+    }
+    knowledgeErrorMessage.value = error?.response?.data?.detail || '加载知识条目失败，已保留当前列表。'
   } finally {
-    knowledgeLoading.value = false
+    if (requestId === knowledgeRequestId) {
+      knowledgeLoading.value = false
+    }
   }
 }
 
@@ -275,7 +333,7 @@ async function submitKnowledge() {
     const item = await knowledgeApi.create(payload)
     knowledgeItems.value = [item, ...knowledgeItems.value]
     resetKnowledgeForm()
-    ElMessage.success('知识条目已新增，等待审核')
+    ElMessage.success('知识条目提交成功')
   } catch (error: any) {
     ElMessage.error(error?.response?.data?.detail || '新增知识条目失败')
   } finally {
@@ -285,6 +343,12 @@ async function submitKnowledge() {
 
 async function reviewKnowledge(itemId: number, status: 'approved' | 'rejected') {
   try {
+    if (itemId < 0) {
+      updateDemoKnowledge(itemId, status)
+      ElMessage.success(`知识条目已${status === 'approved' ? '通过' : '驳回'}`)
+      return
+    }
+
     const item = await knowledgeApi.review(itemId, { status })
     knowledgeItems.value = knowledgeItems.value.map((entry) => (entry.id === item.id ? item : entry))
     ElMessage.success(`知识条目已${status === 'approved' ? '通过' : '驳回'}`)
@@ -368,6 +432,10 @@ onMounted(() => {
   gap: 20px;
 }
 
+.review-workbench__demo-alert {
+  border-radius: 20px;
+}
+
 .hero-metric {
   display: flex;
   flex-direction: column;
@@ -401,6 +469,10 @@ onMounted(() => {
   flex-wrap: wrap;
   gap: 12px;
   align-items: center;
+}
+
+.workbench-inline-alert {
+  margin-bottom: 4px;
 }
 
 .reason-input {

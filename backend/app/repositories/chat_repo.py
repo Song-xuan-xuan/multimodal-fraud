@@ -43,3 +43,16 @@ async def delete_chat(db: AsyncSession, chat_id: str):
     await db.execute(delete(ChatMessage).where(ChatMessage.chat_id == chat_id))
     await db.execute(delete(Chat).where(Chat.id == chat_id))
     await db.commit()
+
+
+async def rename_chat(db: AsyncSession, chat_id: str, title: str) -> Chat | None:
+    result = await db.execute(select(Chat).where(Chat.id == chat_id))
+    chat = result.scalar_one_or_none()
+    if not chat:
+        return None
+
+    chat.title = title
+    chat.updated_at = datetime.now(timezone.utc)
+    await db.commit()
+    await db.refresh(chat)
+    return chat

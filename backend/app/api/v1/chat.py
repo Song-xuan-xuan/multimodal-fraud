@@ -15,16 +15,21 @@ from app.schemas.chat import (
     ChatListResponse,
     ChatMessageCreate,
     ChatMessageResponse,
+    ChatRenameRequest,
     ChatResponse,
+    ChatSendResponse,
     ChatShareRequest,
     ChatShareResponse,
     SharedChatResponse,
 )
 from app.services.chat_service import (
+    build_chat_message_payload,
+    build_chat_message_payload_from_dict,
     create_new_chat,
     get_chat_detail,
     get_user_chats,
     remove_chat,
+    rename_chat,
     send_message,
 )
 
@@ -56,32 +61,23 @@ async def get_chat_api(chat_id: str, user=Depends(get_current_user), db: AsyncSe
             created_at=str(chat.created_at) if chat.created_at else "",
             updated_at=str(chat.updated_at) if chat.updated_at else "",
             is_shared=chat.is_shared,
-            messages=[ChatMessageResponse(
-                id=m.id, role=m.role, content=m.content,
-                created_at=str(m.created_at) if m.created_at else "",
-            ) for m in messages],
+            messages=[ChatMessageResponse(**build_chat_message_payload(m)) for m in messages],
         )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
 
-@router.post("/{chat_id}/messages")
+@router.post("/{chat_id}/messages", response_model=ChatSendResponse)
 async def send_message_api(
     chat_id: str, req: ChatMessageCreate,
     user=Depends(get_current_user), db: AsyncSession = Depends(get_db),
 ):
     try:
         user_msg, assistant_msg = await send_message(db, chat_id, user.id, req.content)
-        return {
-            "user_message": ChatMessageResponse(
-                id=user_msg.id, role=user_msg.role, content=user_msg.content,
-                created_at=str(user_msg.created_at) if user_msg.created_at else "",
-            ),
-            "assistant_message": ChatMessageResponse(
-                id=assistant_msg.id, role=assistant_msg.role, content=assistant_msg.content,
-                created_at=str(assistant_msg.created_at) if assistant_msg.created_at else "",
-            ),
-        }
+        return ChatSendResponse(
+            user_message=ChatMessageResponse(**build_chat_message_payload(user_msg)),
+            assistant_message=ChatMessageResponse(**build_chat_message_payload(assistant_msg)),
+        )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
 
@@ -93,6 +89,27 @@ async def delete_chat_api(chat_id: str, user=Depends(get_current_user), db: Asyn
         return {"message": "对话已删除"}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.patch("/{chat_id}", response_model=ChatResponse)
+async def rename_chat_api(
+    chat_id: str,
+    req: ChatRenameRequest,
+    user=Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    try:
+        chat = await rename_chat(db, chat_id, user.id, req.title)
+        return ChatResponse(
+            id=chat.id,
+            title=chat.title,
+            created_at=str(chat.created_at) if chat.created_at else "",
+            updated_at=str(chat.updated_at) if chat.updated_at else "",
+            is_shared=chat.is_shared,
+        )
+    except ValueError as e:
+        detail = str(e)
+        raise HTTPException(status_code=400 if detail == "对话标题不能为空" else 404, detail=detail)
 
 
 # --- Chat sharing endpoints ---
@@ -117,8 +134,7 @@ async def share_chat(
 
     share_id = uuid4().hex[:8]
     msg_list = [
-        {"id": m.id, "role": m.role, "content": m.content,
-         "created_at": str(m.created_at) if m.created_at else ""}
+        build_chat_message_payload(m)
         for m in messages
     ]
 
@@ -154,7 +170,7 @@ async def get_shared_chat(share_id: str):
         title=data.get("title", ""),
         shared_by=data.get("shared_by", ""),
         created_at=data.get("created_at", ""),
-        messages=[ChatMessageResponse(**m) for m in data.get("messages", [])],
+        messages=[ChatMessageResponse(**build_chat_message_payload_from_dict(m)) for m in data.get("messages", [])],
         is_readonly=data.get("is_readonly", True),
     )
 

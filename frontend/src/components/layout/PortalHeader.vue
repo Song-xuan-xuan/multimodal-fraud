@@ -1,10 +1,13 @@
 ﻿<template>
   <el-header :class="['portal-header', { 'portal-header--home': isHomeRoute }]">
     <div class="portal-header__inner">
-      <RouterLink :to="appRoute.home" class="portal-header__brand">AuthentiAI</RouterLink>
+      <RouterLink :to="appRoute.home" class="portal-header__brand">FraudShield</RouterLink>
 
       <el-menu mode="horizontal" :default-active="activeMenu" class="portal-header__menu" @select="handleMenuSelect">
         <el-menu-item :index="frontendDirectNav.routeName">{{ frontendDirectNav.label }}</el-menu-item>
+        <el-menu-item v-for="item in frontendPrimaryNav" :key="item.routeName" :index="item.routeName">
+          {{ item.label }}
+        </el-menu-item>
         <el-sub-menu
           v-for="group in frontendNavGroups"
           :key="group.index"
@@ -39,7 +42,7 @@ import { computed } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { appRoute, appRouteName } from '@/router'
 import { useAuthStore } from '@/stores/auth'
-import { frontendDirectNav, frontendNavGroups } from './navigation'
+import { frontendDirectNav, frontendNavGroups, frontendPrimaryNav } from './navigation'
 
 const route = useRoute()
 const router = useRouter()
@@ -61,7 +64,10 @@ function openAuth(mode: 'login' | 'register') {
 
 function handleMenuSelect(index: string) {
   if (!authStore.isLoggedIn && index !== appRouteName.home) {
-    const target = frontendNavGroups.flatMap((group) => group.items).find((item) => item.routeName === index)?.route ?? frontendDirectNav.route
+    const target =
+      frontendPrimaryNav.find((item) => item.routeName === index)?.route ??
+      frontendNavGroups.flatMap((group) => group.items).find((item) => item.routeName === index)?.route ??
+      frontendDirectNav.route
     const redirect = router.resolve(target).fullPath
     void router.push({ name: appRouteName.home, query: { auth: 'login', ...(redirect ? { redirect } : {}) } })
     return

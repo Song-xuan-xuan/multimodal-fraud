@@ -298,9 +298,15 @@ onMounted(async () => {
 .data-table {
   --el-table-border-color: rgba(131, 168, 201, 0.18);
   --el-table-header-bg-color: rgba(76, 201, 255, 0.08);
-  --el-table-tr-bg-color: transparent;
+  --el-table-tr-bg-color: rgba(14, 28, 54, 0.6);
   --el-table-bg-color: transparent;
+  --el-table-row-hover-bg-color: rgba(76, 201, 255, 0.10);
   --el-table-text-color: var(--tech-text-primary);
+  --el-table-header-text-color: var(--tech-text-secondary, #a0aec0);
+}
+
+.data-table :deep(.el-table__row--striped td.el-table__cell) {
+  background: rgba(76, 201, 255, 0.04) !important;
 }
 
 :deep(.el-progress-bar__outer) {

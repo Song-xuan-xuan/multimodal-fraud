@@ -43,7 +43,7 @@ async def get_stats(db: AsyncSession = Depends(get_db), user=Depends(get_current
 
 @router.get("/submissions")
 async def list_submissions(db: AsyncSession = Depends(get_db), user=Depends(get_current_user)):
-    result = await db.execute(select(Report).where(Report.status == "pending").order_by(Report.created_at.desc()).limit(50))
+    result = await db.execute(select(Report).order_by(Report.created_at.desc()).limit(100))
     items = result.scalars().all()
     return {
         "items": [

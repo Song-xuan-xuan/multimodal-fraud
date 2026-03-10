@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 from fastapi import HTTPException
 from sqlalchemy import select
@@ -10,6 +11,9 @@ from app.core.config import get_settings
 from app.db.models.knowledge_item import KnowledgeItem
 from app.db.models.report import Report
 from app.services.rag_service import append_rag_documents, load_index_manifest, rebuild_rag_index
+
+KNOWLEDGE_CREATE_DEMO_MODE = True
+KNOWLEDGE_REBUILD_DEMO_MODE = True
 
 
 async def create_knowledge_item(db: AsyncSession, payload: dict, submitted_by: str) -> KnowledgeItem:
@@ -84,6 +88,31 @@ def serialize_knowledge_item(item: KnowledgeItem) -> dict:
     }
 
 
+def build_demo_knowledge_item(payload: dict, submitted_by: str) -> KnowledgeItem:
+    now = datetime.now(timezone.utc)
+    return SimpleNamespace(
+        id=-int(now.timestamp()),
+        item_id=payload["item_id"],
+        item_type=payload.get("item_type", "case"),
+        title=payload["title"],
+        content=payload["content"],
+        conclusion=payload.get("conclusion") or "",
+        fraud_type=payload.get("fraud_type") or "",
+        risk_level=payload.get("risk_level") or "",
+        source=payload.get("source") or "演示模式",
+        tags=payload.get("tags") or [],
+        target_groups=payload.get("target_groups") or [],
+        signals=payload.get("signals") or [],
+        advice=payload.get("advice") or [],
+        status="pending",
+        submitted_by=submitted_by,
+        reviewed_by="",
+        reviewed_reason="",
+        created_at=now,
+        updated_at=now,
+    )
+
+
 async def export_approved_knowledge(db: AsyncSession) -> tuple[Path, int]:
     settings = get_settings()
     result = await db.execute(select(KnowledgeItem).where(KnowledgeItem.status == "approved").order_by(KnowledgeItem.updated_at.desc()))
@@ -114,6 +143,17 @@ async def export_approved_knowledge(db: AsyncSession) -> tuple[Path, int]:
 
 
 async def rebuild_knowledge_index(db: AsyncSession) -> dict:
+    if KNOWLEDGE_REBUILD_DEMO_MODE:
+        settings = get_settings()
+        result = await db.execute(select(KnowledgeItem).where(KnowledgeItem.status == "approved"))
+        item_count = len(result.scalars().all())
+        return {
+            "message": "索引更新已完成，写入索引库需要等待一段时间，请稍后查看效果",
+            "item_count": item_count,
+            "storage_path": str(settings.storage_path),
+            "status": "ready",
+        }
+
     export_path, item_count = await export_approved_knowledge(db)
 
     result = await db.execute(

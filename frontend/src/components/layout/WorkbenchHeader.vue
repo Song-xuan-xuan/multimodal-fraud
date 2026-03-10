@@ -26,6 +26,15 @@
 
       <div class="workbench-header__actions">
         <span class="workbench-header__username">{{ authStore.username }}</span>
+        <el-button
+          v-if="showAdminWorkbenchButton"
+          class="workbench-header__review-button"
+          type="primary"
+          plain
+          @click="router.push(appRoute.adminReviewWorkbench)"
+        >
+          审核工作台
+        </el-button>
         <el-button class="workbench-header__action-button" type="primary" plain @click="router.push(appRoute.home)">返回前台</el-button>
         <el-button class="workbench-header__text-button" text @click="handleLogout">退出</el-button>
       </div>
@@ -38,7 +47,7 @@ import { computed } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { appRoute } from '@/router'
 import { useAuthStore } from '@/stores/auth'
-import { backendDirectNav, buildBackendNavGroups } from './navigation'
+import { backendDirectNav, buildBackendNavGroups, isAdminUsername } from './navigation'
 
 const route = useRoute()
 const router = useRouter()
@@ -51,6 +60,7 @@ const currentRouteMeta = computed(() => route.meta as {
 
 const activeMenu = computed(() => String(route.name || backendDirectNav.routeName))
 const backendNavGroups = computed(() => buildBackendNavGroups(authStore.username))
+const showAdminWorkbenchButton = computed(() => isAdminUsername(authStore.username))
 
 function handleMenuSelect(index: string) {
   void router.push({ name: index })
@@ -190,6 +200,21 @@ function handleLogout() {
   color: var(--tech-theme-text-regular);
   white-space: nowrap;
 }
+
+.workbench-header__review-button {
+  color: rgba(238, 249, 255, 0.96);
+  border-color: rgba(138, 230, 255, 0.44);
+  background: linear-gradient(135deg, rgba(8, 41, 76, 0.9), rgba(7, 28, 56, 0.96));
+  box-shadow: 0 0 0 1px rgba(124, 231, 255, 0.12), 0 0 20px rgba(92, 255, 225, 0.12);
+}
+
+.workbench-header__review-button:hover,
+.workbench-header__review-button:focus-visible {
+  border-color: rgba(164, 238, 255, 0.56);
+  background: linear-gradient(135deg, rgba(10, 54, 98, 0.96), rgba(8, 34, 64, 1));
+  box-shadow: 0 0 0 1px rgba(124, 231, 255, 0.16), 0 0 24px rgba(92, 255, 225, 0.18);
+}
+
 .workbench-header__action-button {
   color: rgba(210, 245, 255, 0.88);
   border-color: rgba(210, 245, 255, 0.88);
@@ -244,6 +269,7 @@ function handleLogout() {
     justify-content: flex-end;
     flex-wrap: wrap;
   }
+
 }
 
 @media (max-width: 768px) {
@@ -269,6 +295,11 @@ function handleLogout() {
 
 .workbench-header :deep(.el-button--primary.is-plain),
 .workbench-header :deep(.el-button--primary.is-plain span) {
+  color: #eef9ff !important;
+}
+
+.workbench-header__actions :deep(.workbench-header__review-button.el-button--primary.is-plain),
+.workbench-header__actions :deep(.workbench-header__review-button.el-button--primary.is-plain span) {
   color: #eef9ff !important;
 }
 

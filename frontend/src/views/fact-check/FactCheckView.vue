@@ -1,6 +1,6 @@
-﻿<template>
-  <div class="fact-check-view page-shell">
-    <h2>诈骗话术与承诺核验</h2>
+<template>
+  <div :class="['fact-check-view', { 'page-shell': !embedded, 'fact-check-view--embedded': embedded }]">
+    <h2 v-if="!embedded">诈骗话术与承诺核验</h2>
     <el-form label-position="top" class="fact-check-view__form">
       <el-form-item label="需要核验的话术或承诺">
         <el-input v-model="text" type="textarea" :rows="5" placeholder="输入对方的话术、投资承诺、客服说明或可疑声明..." />
@@ -115,6 +115,10 @@ import { useRoute, useRouter } from 'vue-router'
 import { factCheckApi, type FactCheckHistoryItem, type FactCheckResult } from '@/api/fact-check'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { asPositiveInt, asString, replaceQueryKeepingOthers } from '@/composables/useQueryState'
+
+withDefaults(defineProps<{ embedded?: boolean }>(), {
+  embedded: false,
+})
 
 const route = useRoute()
 const router = useRouter()
@@ -274,7 +278,7 @@ async function deleteHistory(id: string) {
     }
     await loadHistory()
   } catch {
-    // user cancelled or request failed (already messaged by interceptor/catch)
+    // user cancelled or request failed
   }
 }
 
@@ -334,6 +338,8 @@ onMounted(async () => {
   justify-content: flex-end;
   margin-top: 12px;
 }
+
+.fact-check-view--embedded {
+  padding: 0;
+}
 </style>
-
-

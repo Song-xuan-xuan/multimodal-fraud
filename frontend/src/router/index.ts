@@ -296,7 +296,7 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: true,
       layout: 'frontend',
       pageGroup: '风险分析',
-      pageTitle: '多模态分析',
+      pageTitle: '专项分析',
       motionPreset: 'slide-left',
     } satisfies AppRouteMeta,
   },
@@ -442,6 +442,12 @@ const routes: RouteRecordRaw[] = [
 
 const router = createRouter({
   history: createWebHistory(),
+  scrollBehavior(_to, _from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    }
+    return { top: 0 }
+  },
   routes: routes.map((route) => {
     if (route.name === appRouteName.adminReviewWorkbench) {
       return {
@@ -459,6 +465,33 @@ const router = createRouter({
 
     return route
   }),
+})
+
+const CHUNK_RELOAD_GUARD_KEY = 'app_chunk_reload_guard'
+
+router.onError((error, to) => {
+  const message = error instanceof Error ? error.message : String(error || '')
+  const isChunkLoadError =
+    /Failed to fetch dynamically imported module/i.test(message) ||
+    /Importing a module script failed/i.test(message) ||
+    /Loading chunk [\d\w-]+ failed/i.test(message)
+
+  if (!isChunkLoadError || typeof window === 'undefined') {
+    console.error('[router] navigation error:', error)
+    return
+  }
+
+  const currentGuard = window.sessionStorage.getItem(CHUNK_RELOAD_GUARD_KEY)
+  const targetPath = typeof to?.fullPath === 'string' && to.fullPath ? to.fullPath : window.location.pathname
+
+  if (currentGuard === targetPath) {
+    window.sessionStorage.removeItem(CHUNK_RELOAD_GUARD_KEY)
+    console.error('[router] chunk reload failed after retry:', error)
+    return
+  }
+
+  window.sessionStorage.setItem(CHUNK_RELOAD_GUARD_KEY, targetPath)
+  window.location.assign(targetPath)
 })
 
 router.beforeEach((to) => {

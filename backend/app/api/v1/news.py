@@ -6,6 +6,7 @@ from app.core.deps import get_current_user
 from app.db.base import get_db
 from app.db.models.news import NewsArticle
 from app.schemas.news import (
+    KnowledgeGraphResponse,
     NewsAnalyzeRequest,
     NewsAnalyzeResponse,
     NewsDetailResponse,
@@ -16,7 +17,7 @@ from app.schemas.news import (
     NewsTimelineResponse,
     TimelineEvent,
 )
-from app.services.news_service import get_news_aggregated_detail, get_news_detail, search_news
+from app.services.news_service import build_knowledge_graph, get_news_aggregated_detail, get_news_detail, normalize_credibility_dimensions, search_news
 
 router = APIRouter()
 
@@ -83,6 +84,20 @@ async def aggregate_news_api(
     )
 
 
+@router.get("/{news_id}/graph", response_model=KnowledgeGraphResponse)
+async def get_news_graph_api(
+    news_id: str,
+    depth: int = Query(default=2, ge=1, le=3),
+    max_nodes: int = Query(default=60, ge=10, le=200),
+    db: AsyncSession = Depends(get_db),
+):
+    """Build a multi-hop knowledge graph from a seed news article."""
+    try:
+        return await build_knowledge_graph(db, news_id, max_depth=depth, max_nodes=max_nodes)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
 @router.get("/{news_id}/detail", response_model=NewsDetailResponse)
 async def get_news_detail_api(news_id: str, db: AsyncSession = Depends(get_db)):
     try:
@@ -103,7 +118,7 @@ async def get_news_api(news_id: str, db: AsyncSession = Depends(get_db)):
 def _to_response(item) -> NewsResponse:
     from app.schemas.news import CredibilityDimensionScores, CredibilityInfo
 
-    dims = item.credibility_dimensions or {}
+    dims = normalize_credibility_dimensions(item.credibility_dimensions or {})
     return NewsResponse(
         news_id=item.news_id,
         title=item.title or "",

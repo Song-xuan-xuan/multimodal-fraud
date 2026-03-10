@@ -30,3 +30,19 @@ defineProps<{
   emptyText?: string
 }>()
 </script>
+
+<style scoped>
+:deep(.el-table) {
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: rgba(14, 28, 54, 0.6);
+  --el-table-border-color: rgba(76, 201, 255, 0.08);
+  --el-table-header-bg-color: rgba(76, 201, 255, 0.06);
+  --el-table-row-hover-bg-color: rgba(76, 201, 255, 0.10);
+  --el-table-text-color: var(--tech-text-regular, #ccc);
+  --el-table-header-text-color: var(--tech-text-secondary, #a0aec0);
+}
+
+:deep(.el-table__row--striped td.el-table__cell) {
+  background: rgba(76, 201, 255, 0.04) !important;
+}
+</style>

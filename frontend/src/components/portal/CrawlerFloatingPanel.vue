@@ -71,15 +71,49 @@
 import { onMounted, ref } from 'vue'
 import { crawlerApi, type CrawlerNewsItem } from '@/api/crawler'
 
+const CRAWLER_CACHE_KEY = 'portal_crawler_news_cache'
+
 const collapsed = ref(false)
 const loading = ref(false)
 const newsList = ref<CrawlerNewsItem[]>([])
+
+function readCache() {
+  if (typeof window === 'undefined') return
+
+  try {
+    const cached = localStorage.getItem(CRAWLER_CACHE_KEY)
+    if (!cached) return
+
+    const parsed = JSON.parse(cached) as { news?: CrawlerNewsItem[] }
+    if (Array.isArray(parsed.news) && parsed.news.length > 0) {
+      newsList.value = parsed.news.slice(0, 8)
+    }
+  } catch (error) {
+    console.warn('读取实时新闻缓存失败', error)
+  }
+}
+
+function writeCache(items: CrawlerNewsItem[]) {
+  if (typeof window === 'undefined') return
+
+  try {
+    localStorage.setItem(
+      CRAWLER_CACHE_KEY,
+      JSON.stringify({
+        news: items.slice(0, 8),
+      }),
+    )
+  } catch (error) {
+    console.warn('写入实时新闻缓存失败', error)
+  }
+}
 
 async function fetchNews() {
   loading.value = true
   try {
     const res = await crawlerApi.getLatest()
     newsList.value = res.news.slice(0, 8)
+    writeCache(newsList.value)
   } catch (e) {
     console.error('获取实时新闻失败', e)
   } finally {
@@ -88,7 +122,10 @@ async function fetchNews() {
 }
 
 onMounted(() => {
-  fetchNews()
+  readCache()
+  if (newsList.value.length === 0) {
+    void fetchNews()
+  }
 })
 </script>
 

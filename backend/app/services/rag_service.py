@@ -1,5 +1,7 @@
 import json
 import logging
+import os
+import shutil
 import sys
 import threading
 import uuid
@@ -49,6 +51,26 @@ def persist_index_manifest(storage_path: Path, indexed_item_ids: list[str]) -> N
         json.dumps({'indexed_item_ids': sorted(indexed_item_ids)}, ensure_ascii=False, indent=2),
         encoding='utf-8',
     )
+
+
+def _persist_snapshot_atomically(storage_context, storage_path: Path) -> None:
+    """Persist index files through a temp directory, then atomically replace live files.
+
+    LlamaIndex writes JSON snapshots by truncating and rewriting target files. Writing into
+    a temp directory first avoids exposing partially-written live files during demos.
+    """
+    storage_path.mkdir(parents=True, exist_ok=True)
+    temp_path = storage_path.parent / f'{storage_path.name}.tmp.{uuid.uuid4().hex}'
+
+    try:
+        temp_path.mkdir(parents=True, exist_ok=True)
+        storage_context.persist(persist_dir=str(temp_path))
+        for item in temp_path.iterdir():
+            if item.is_file():
+                os.replace(item, storage_path / item.name)
+    finally:
+        if temp_path.exists():
+            shutil.rmtree(temp_path, ignore_errors=True)
 
 
 def _build_document_payload(item: dict) -> dict:
@@ -222,7 +244,7 @@ def append_rag_documents(documents_data: list[dict]) -> tuple[Path, int]:
     for document in documents:
         service._index.insert(document)
 
-    service._index.storage_context.persist(persist_dir=str(storage_path))
+    _persist_snapshot_atomically(service._index.storage_context, storage_path)
 
     manifest = load_index_manifest(storage_path)
     indexed_item_ids = set(manifest.get('indexed_item_ids', []))
@@ -257,3 +279,21 @@ async def ask_question(question: str, session_id: str | None = None) -> dict:
     except Exception as e:
         logger.error('RAG query failed: %s', e)
         raise RuntimeError(f'RAG query failed: {str(e)}') from e
+
+
+def retrieve_relevant_sources(question: str, similarity_top_k: int | None = None) -> list[dict]:
+    ensure_rag_initialized()
+
+    if not _initialized:
+        raise RuntimeError(_init_error or 'RAG service is not initialized')
+
+    try:
+        from model.rag.service import get_rag_service
+
+        settings = get_settings()
+        service = get_rag_service()
+        top_k = similarity_top_k or settings.SIMILARITY_TOP_K
+        return service.retrieve_sources(question, similarity_top_k=top_k)
+    except Exception as e:
+        logger.error('RAG retrieve failed: %s', e)
+        raise RuntimeError(f'RAG retrieve failed: {str(e)}') from e

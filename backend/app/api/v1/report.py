@@ -98,6 +98,29 @@ async def list_my_reports(
     )
 
 
+@router.delete("/withdraw/{report_id}")
+async def withdraw_report(
+    report_id: str,
+    user=Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Allow users to withdraw their own pending reports."""
+    result = await db.execute(
+        select(Report).where(
+            Report.report_id == report_id,
+            Report.reported_by == user.username,
+        )
+    )
+    report = result.scalar_one_or_none()
+    if not report:
+        raise HTTPException(status_code=404, detail="举报记录不存在")
+    if report.status != "pending":
+        raise HTTPException(status_code=400, detail="仅待审核的举报可以撤回")
+    await db.delete(report)
+    await db.flush()
+    return {"message": "举报已撤回", "report_id": report_id}
+
+
 @router.get("/export/{news_id}", response_model=ReportExportResponse)
 async def export_report(news_id: str, db: AsyncSession = Depends(get_db), user=Depends(get_current_user)):
     news_result = await db.execute(select(NewsArticle).where(NewsArticle.news_id == news_id))
@@ -139,7 +162,7 @@ async def list_report_submissions(
     user=Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(Report).where(Report.status == "pending").order_by(desc(Report.created_at)).limit(50))
+    result = await db.execute(select(Report).order_by(desc(Report.created_at)).limit(100))
     items = result.scalars().all()
     return ReportListResponse(
         items=[
@@ -160,7 +183,7 @@ async def list_report_submissions(
         ],
         total=len(items),
         page=1,
-        page_size=50,
+        page_size=100,
         total_pages=1,
     )
 

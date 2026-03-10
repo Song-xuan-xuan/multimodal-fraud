@@ -11,6 +11,8 @@ from app.schemas.knowledge import (
     KnowledgeRebuildResponse,
 )
 from app.services.knowledge_service import (
+    KNOWLEDGE_CREATE_DEMO_MODE,
+    build_demo_knowledge_item,
     create_knowledge_item,
     list_knowledge_items,
     rebuild_knowledge_index,
@@ -38,6 +40,10 @@ async def create_knowledge(
     user=Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    if KNOWLEDGE_CREATE_DEMO_MODE:
+        item = build_demo_knowledge_item(req.model_dump(), submitted_by=user.username)
+        return KnowledgeItemResponse(**serialize_knowledge_item(item))
+
     item = await create_knowledge_item(db, req.model_dump(), submitted_by=user.username)
     return KnowledgeItemResponse(**serialize_knowledge_item(item))
 

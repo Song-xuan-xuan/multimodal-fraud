@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from .admin import router as admin_router
+from .agent import router as agent_router
 from .alerts import router as alerts_router
 from .auth import router as auth_router
 from .chat import router as chat_router
@@ -21,6 +22,7 @@ from .report import router as report_router
 api_router = APIRouter(prefix="/api/v1")
 
 api_router.include_router(auth_router, prefix="/auth", tags=["auth"])
+api_router.include_router(agent_router, prefix="/agent", tags=["agent"])
 api_router.include_router(news_router, prefix="/news", tags=["news"])
 api_router.include_router(detection_router, prefix="/detection", tags=["detection"])
 api_router.include_router(fact_check_router, prefix="/fact-check", tags=["fact-check"])

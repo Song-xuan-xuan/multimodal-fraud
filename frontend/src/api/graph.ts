@@ -14,27 +14,11 @@ interface SeedNewsListResponse {
   total: number
 }
 
-interface NewsDetailRelationNode {
-  node_id: string
-  name: string
-  category: string
-  value: number
-}
-
-interface NewsDetailRelationEdge {
-  source: string
-  target: string
-  relation_type: string
-  weight: number
-}
-
-interface NewsDetailResponse {
-  news_id: string
-  title: string
-  relations: {
-    nodes: NewsDetailRelationNode[]
-    edges: NewsDetailRelationEdge[]
-  }
+interface GraphApiResponse {
+  seed_news_id: string
+  seed_title: string
+  nodes: Array<{ node_id: string; name: string; category: string; value: number }>
+  edges: Array<{ source: string; target: string; relation_type: string; weight: number }>
 }
 
 export const graphApi = {
@@ -53,32 +37,20 @@ export const graphApi = {
     }
   },
 
-  async getKnowledgeGraph(seedNewsId: string): Promise<KnowledgeGraphResponse> {
-    const { data } = await api.get<NewsDetailResponse>(`/news/${encodeURIComponent(seedNewsId)}/detail`)
+  async getKnowledgeGraph(seedNewsId: string, depth = 2, maxNodes = 60): Promise<KnowledgeGraphResponse> {
+    const { data } = await api.get<GraphApiResponse>(
+      `/news/${encodeURIComponent(seedNewsId)}/graph`,
+      { params: { depth, max_nodes: maxNodes } },
+    )
 
-    const relationNodes = data.relations?.nodes || []
-    const relationEdges = data.relations?.edges || []
-
-    const seedId = String(seedNewsId)
-    const hasSeedNode = relationNodes.some((node) => node.node_id === seedId)
-
-    const nodes = relationNodes.map((node) => ({
+    const nodes = (data.nodes || []).map((node) => ({
       id: String(node.node_id),
       name: String(node.name || ''),
-      category: String(node.category || '实体'),
+      category: String(node.category || 'news'),
       value: Number(node.value || 1),
     }))
 
-    if (!hasSeedNode) {
-      nodes.unshift({
-        id: seedId,
-        name: String(data.title || '种子新闻'),
-        category: '种子新闻',
-        value: 20,
-      })
-    }
-
-    const edges = relationEdges.map((edge) => ({
+    const edges = (data.edges || []).map((edge) => ({
       source: String(edge.source),
       target: String(edge.target),
       relation_type: String(edge.relation_type || 'related'),
@@ -86,8 +58,8 @@ export const graphApi = {
     }))
 
     return {
-      seed_news_id: seedId,
-      seed_title: String(data.title || ''),
+      seed_news_id: String(data.seed_news_id),
+      seed_title: String(data.seed_title || ''),
       nodes,
       edges,
     }
