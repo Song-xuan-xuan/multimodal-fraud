@@ -2,26 +2,20 @@
   <div class="edu-view page-shell">
     <div class="edu-view__intro">
       <h2>反诈训练中心</h2>
-      <p>进入反诈训练模块，查看模拟演练、风险测试与防骗资料。</p>
+      <p>训练模块已聚焦为两页：答题训练与反诈教练。</p>
     </div>
 
     <el-row :gutter="20" class="edu-view__grid">
-      <el-col :span="8">
-        <el-card class="edu-view__card" shadow="hover" @click="$router.push('/education/sandbox')">
-          <h3>场景演练</h3>
-          <p>在安全环境中体验诈骗场景识别</p>
-        </el-card>
-      </el-col>
-      <el-col :span="8">
+      <el-col :span="12">
         <el-card class="edu-view__card" shadow="hover" @click="$router.push('/education/question')">
-          <h3>风险测试</h3>
-          <p>测试你的反诈识别能力</p>
+          <h3>答题训练</h3>
+          <p>完成阶段题后，获取学习目标、微课卡片与薄弱项建议</p>
         </el-card>
       </el-col>
-      <el-col :span="8">
-        <el-card class="edu-view__card" shadow="hover" @click="$router.push('/education/stages')">
-          <h3>防骗资料</h3>
-          <p>了解常见诈骗套路与防范方法</p>
+      <el-col :span="12">
+        <el-card class="edu-view__card" shadow="hover" @click="$router.push('/education/coach')">
+          <h3>反诈教练</h3>
+          <p>围绕你的错题和薄弱点，获得个性化训练指导</p>
         </el-card>
       </el-col>
     </el-row>

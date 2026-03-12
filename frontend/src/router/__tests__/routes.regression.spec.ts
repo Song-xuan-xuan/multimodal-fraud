@@ -6,12 +6,12 @@ const routerPath = path.resolve(__dirname, '../index.ts')
 const source = fs.readFileSync(routerPath, 'utf-8')
 
 describe('route regression for backend governance pages', () => {
-  it('keeps routes for review workbench, crowd board and knowledge graph', () => {
+  it('keeps routes for review workbench, third-party services and knowledge graph', () => {
     expect(source).toContain("path: '/admin/review-workbench'")
     expect(source).toContain("name: appRouteName.adminReviewWorkbench")
 
-    expect(source).toContain("path: '/evidence/crowd-board'")
-    expect(source).toContain("name: appRouteName.crowdBoard")
+    expect(source).toContain("path: '/community/third-party-services'")
+    expect(source).toContain("name: appRouteName.thirdPartyServices")
 
     expect(source).toContain("path: '/insight/knowledge-graph'")
     expect(source).toContain("name: appRouteName.insightKnowledgeGraph")

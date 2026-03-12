@@ -83,23 +83,23 @@
           :title="knowledgeErrorMessage"
         />
         <div class="knowledge-form-grid">
-          <el-input v-model="knowledgeForm.item_id" placeholder="条目标识，如 case_001" />
-          <el-select v-model="knowledgeForm.item_type" placeholder="知识类型">
+          <el-input v-model="knowledgeForm.item_id" placeholder="* 条目标识（必选），如 case_001" />
+          <el-select v-model="knowledgeForm.item_type" placeholder="* 知识类型（必选）">
             <el-option label="案例" value="case" />
             <el-option label="法规" value="law" />
             <el-option label="指南" value="guideline" />
             <el-option label="公告" value="notice" />
           </el-select>
-          <el-input v-model="knowledgeForm.fraud_type" placeholder="诈骗类型" />
-          <el-input v-model="knowledgeForm.risk_level" placeholder="风险等级" />
-          <el-input v-model="knowledgeForm.source" placeholder="来源" />
-          <el-input v-model="knowledgeForm.tagsInput" placeholder="标签，使用逗号分隔" />
-          <el-input v-model="knowledgeForm.targetGroupsInput" placeholder="适用人群，使用逗号分隔" />
-          <el-input v-model="knowledgeForm.signalsInput" placeholder="风险信号，使用逗号分隔" />
-          <el-input v-model="knowledgeForm.adviceInput" placeholder="处置建议，使用逗号分隔" />
-          <el-input v-model="knowledgeForm.title" class="knowledge-form-grid__full" placeholder="标题" />
-          <el-input v-model="knowledgeForm.content" type="textarea" :rows="4" class="knowledge-form-grid__full" placeholder="正文内容" />
-          <el-input v-model="knowledgeForm.conclusion" type="textarea" :rows="2" class="knowledge-form-grid__full" placeholder="结论摘要" />
+          <el-input v-model="knowledgeForm.fraud_type" placeholder="可选：诈骗类型" />
+          <el-input v-model="knowledgeForm.risk_level" placeholder="可选：风险等级" />
+          <el-input v-model="knowledgeForm.source" placeholder="可选：来源" />
+          <el-input v-model="knowledgeForm.tagsInput" placeholder="可选：标签，使用逗号分隔" />
+          <el-input v-model="knowledgeForm.targetGroupsInput" placeholder="可选：适用人群，使用逗号分隔" />
+          <el-input v-model="knowledgeForm.signalsInput" placeholder="可选：风险信号，使用逗号分隔" />
+          <el-input v-model="knowledgeForm.adviceInput" placeholder="可选：处置建议，使用逗号分隔" />
+          <el-input v-model="knowledgeForm.title" class="knowledge-form-grid__full" placeholder="* 标题（必选）" />
+          <el-input v-model="knowledgeForm.content" type="textarea" :rows="4" class="knowledge-form-grid__full" placeholder="* 正文内容（必选）" />
+          <el-input v-model="knowledgeForm.conclusion" type="textarea" :rows="2" class="knowledge-form-grid__full" placeholder="可选：结论摘要" />
         </div>
         <div class="action-row">
           <el-button type="primary" :loading="createKnowledgeLoading" @click="submitKnowledge">新增知识条目</el-button>
@@ -483,6 +483,25 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
+}
+
+.knowledge-form-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: -2px;
+  color: var(--tech-text-secondary);
+  font-size: 13px;
+}
+
+.knowledge-form-hint__required {
+  color: var(--tech-text-danger);
+  font-weight: 600;
+}
+
+.knowledge-form-hint__optional {
+  color: var(--tech-text-info);
+  font-weight: 600;
 }
 
 .knowledge-form-grid__full {

@@ -26,9 +26,9 @@ export const frontendDirectNav = {
 }
 
 export const frontendPrimaryNav: NavigationItem[] = [
+  { label: '多模态分析', routeName: appRouteName.agent, route: appRoute.agent },
   { label: '专项分析', routeName: appRouteName.aiDetect, route: appRoute.aiDetect },
   { label: '反诈助手', routeName: appRouteName.aiAssistant, route: appRoute.aiAssistant },
-  { label: '多模态分析', routeName: appRouteName.agent, route: appRoute.agent },
 ]
 
 export const frontendNavGroups: NavigationGroup[] = []
@@ -63,25 +63,22 @@ export function buildBackendNavGroups(username: string | null | undefined): Navi
       label: '社区治理',
       items: [
         { label: '论坛', routeName: appRouteName.forum, route: appRoute.forum },
-        { label: '排行榜', routeName: appRouteName.leaderboard, route: appRoute.leaderboard },
         { label: '众包社区', routeName: appRouteName.crowdsource, route: appRoute.crowdsource },
-        { label: '众包看板', routeName: appRouteName.crowdBoard, route: appRoute.crowdBoard },
+        { label: '第三方服务', routeName: appRouteName.thirdPartyServices, route: appRoute.thirdPartyServices },
       ],
     },
     {
       index: 'backend-education',
       label: '反诈训练',
       items: [
-        { label: '教育研学', routeName: appRouteName.edu, route: appRoute.edu },
-        { label: '沙盒', routeName: appRouteName.sandbox, route: appRoute.sandbox },
-        { label: '测试', routeName: appRouteName.question, route: appRoute.question },
-        { label: '学习阶段', routeName: appRouteName.stages, route: appRoute.stages },
+        { label: '答题训练', routeName: appRouteName.question, route: appRoute.question },
+        { label: '反诈教练', routeName: appRouteName.educationCoach, route: appRoute.educationCoach },
       ],
     },
     {
       index: 'backend-account',
-      label: '账户',
-      items: [{ label: '个人中心', routeName: appRouteName.profile, route: appRoute.profile }],
+      label: '个人账户',
+      items: [{ label: '个人账户', routeName: appRouteName.profile, route: appRoute.profile }],
     },
   ]
 }

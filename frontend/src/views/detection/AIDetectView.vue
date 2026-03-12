@@ -3,25 +3,22 @@
     <section class="ai-detect-view__hero">
       <div class="ai-detect-view__hero-copy">
         <p class="ai-detect-view__eyebrow">专项分析工作台</p>
-        <h2>统一承接原风险分析能力</h2>
-        <p class="ai-detect-view__summary">
-          在同一页面内完成多模态检测、内容风险检测、话术分类识别和风险核验，避免前台导航分散。
-        </p>
+        <h2>风险分析能力</h2>
       </div>
       <div class="ai-detect-view__hero-badges">
         <span>文本 / 图片 / 语音</span>
-        <span>新闻内容核验</span>
+        <span>内容核验</span>
         <span>诈骗话术分类</span>
         <span>外部证据检索</span>
       </div>
     </section>
 
     <el-tabs v-model="activeWorkspace" class="ai-detect-view__workspace-tabs">
-      <el-tab-pane label="多模态检测" name="multimodal">
+      <el-tab-pane label="专项风险检测" name="multimodal">
         <section class="ai-detect-view__workspace-panel">
           <div class="ai-detect-view__panel-header">
             <div>
-              <h3>多模态风控分析</h3>
+              <h3>风控分析</h3>
               <p>保留原有文本、截图和语音检测能力，作为专项分析里的第一类核心工具。</p>
             </div>
           </div>
@@ -54,17 +51,22 @@
               </div>
               <el-button type="primary" @click="detectAudio" :loading="loading" :disabled="!audioFile" class="ai-detect-view__action">分析</el-button>
             </el-tab-pane>
+            <el-tab-pane label="链接检测" name="url">
+              <el-input v-model="urlInput" placeholder="请输入新闻链接（http/https）" />
+              <el-button type="primary" @click="detectUrl" :loading="loading" class="ai-detect-view__action">链接检测</el-button>
+            </el-tab-pane>
           </el-tabs>
 
-          <DetectionResult v-if="displayResult" :result="displayResult" class="ai-detect-view__result" />
+          <DetectionResult v-if="activeTab !== 'url' && displayResult" :result="displayResult" class="ai-detect-view__result" />
+          <NewsDetectionResult v-if="activeTab === 'url' && urlResult" :result="urlResult" class="ai-detect-view__result" />
         </section>
       </el-tab-pane>
-
+<!-- 
       <el-tab-pane label="内容风险检测" name="news">
         <section class="ai-detect-view__workspace-panel">
           <NewsDetectView v-if="activeWorkspace === 'news'" embedded />
         </section>
-      </el-tab-pane>
+      </el-tab-pane> -->
 
       <el-tab-pane label="话术分类识别" name="classify">
         <section class="ai-detect-view__workspace-panel">
@@ -92,6 +94,9 @@ import FakeNewsClassifyView from '@/views/detection/FakeNewsClassifyView.vue'
 import FactCheckView from '@/views/fact-check/FactCheckView.vue'
 import type { DetectionDisplayResult } from '@/types/detection'
 import { normalizeDetectionResult } from '@/utils/detectionResult'
+import NewsDetectionResult from '@/components/detection/NewsDetectionResult.vue'
+import type { ConsistencyDisplayResult } from '@/types/newsDetection'
+import { normalizeConsistencyDetectionResult } from '@/utils/newsDetectionResult'
 
 const activeWorkspace = ref('multimodal')
 const activeTab = ref('text')
@@ -100,6 +105,8 @@ const selectedFile = ref<File | null>(null)
 const audioFile = ref<File | null>(null)
 const imagePreviewUrl = ref('')
 const displayResult = ref<DetectionDisplayResult | null>(null)
+const urlInput = ref('')
+const urlResult = ref<ConsistencyDisplayResult | null>(null)
 const loading = ref(false)
 
 function revokePreviewUrl() {
@@ -111,6 +118,7 @@ function revokePreviewUrl() {
 function handleFileSelect(file: File) {
   selectedFile.value = file
   displayResult.value = null
+  urlResult.value = null
   revokePreviewUrl()
   imagePreviewUrl.value = URL.createObjectURL(file)
 }
@@ -119,6 +127,7 @@ function handleAudioSelect(uploadFile: any) {
   if (uploadFile?.raw) {
     audioFile.value = uploadFile.raw as File
     displayResult.value = null
+    urlResult.value = null
   }
 }
 
@@ -132,6 +141,7 @@ async function detectText() {
       rawResult,
       textPreview: textInput.value.trim(),
     })
+    urlResult.value = null
   } catch (e: any) {
     ElMessage.error(e.response?.data?.detail || '分析失败')
   } finally { loading.value = false }
@@ -147,6 +157,7 @@ async function detectImage() {
       rawResult,
       imagePreviewUrl: imagePreviewUrl.value,
     })
+    urlResult.value = null
   } catch (e: any) {
     ElMessage.error(e.response?.data?.detail || '分析失败')
   } finally { loading.value = false }
@@ -162,9 +173,25 @@ async function detectAudio() {
       rawResult,
       textPreview: rawResult.transcript || '',
     })
+    urlResult.value = null
   } catch (e: any) {
     ElMessage.error(e.response?.data?.detail || '语音分析失败')
   } finally { loading.value = false }
+}
+
+async function detectUrl() {
+  const url = urlInput.value.trim()
+  if (!url) return ElMessage.warning('请输入链接')
+  loading.value = true
+  try {
+    const rawResult = await detectionApi.detectByUrl(url)
+    urlResult.value = normalizeConsistencyDetectionResult(rawResult)
+    displayResult.value = null
+  } catch (e: any) {
+    ElMessage.error(e.response?.data?.detail || '链接检测失败')
+  } finally {
+    loading.value = false
+  }
 }
 
 onBeforeUnmount(() => {

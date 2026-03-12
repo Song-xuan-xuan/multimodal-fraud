@@ -129,8 +129,8 @@ const provincePinLayout = [
 ]
 
 const quickActions = computed(() => [
-  { label: '风险分析', path: '/detection/ai', icon: 'AI' },
-  { label: '风险核验', path: '/fact-check', icon: 'FC' },
+  { label: '多模态分析', path: '/ai/agent', icon: 'MM' },
+  { label: '专项分析', path: '/detection/ai', icon: 'SA' },
   { label: '线索上报', path: '/report', icon: 'RP' },
   ...(isAdmin.value ? [{ label: '治理工作台', path: '/admin/review-workbench', icon: 'GW' }] : []),
 ])
@@ -248,7 +248,7 @@ const alerts = computed(() => {
     },
     {
       title: '反诈助手入口可用',
-      description: '可直接跳转到知识问答、风险分析或 Agent 流程。',
+      description: '可直接跳转到反诈助手、多模态分析或专项分析流程。',
       time: formattedUpdatedAt.value,
       level: 'info' as const,
       levelText: '快捷入口',

@@ -50,7 +50,7 @@ describe('newsDetectionResult normalization', () => {
 
   it('normalizes consistency raw result into ConsistencyDisplayResult', () => {
     const result = normalizeConsistencyDetectionResult({
-      title: '新闻标题',
+      title: '标题',
       content: '正文内容',
       url: 'https://example.com/news',
       title_txt_match: false,
@@ -64,7 +64,7 @@ describe('newsDetectionResult normalization', () => {
 
     expect(result.resultKind).toBe('consistency')
     expect(result.label).toBe('不一致')
-    expect(result.title).toBe('新闻标题')
+    expect(result.title).toBe('标题')
     expect(result.content).toBe('正文内容')
     expect(result.url).toBe('https://example.com/news')
     expect(result.titleTextMatch).toBe(false)

@@ -148,7 +148,7 @@ async def rebuild_knowledge_index(db: AsyncSession) -> dict:
         result = await db.execute(select(KnowledgeItem).where(KnowledgeItem.status == "approved"))
         item_count = len(result.scalars().all())
         return {
-            "message": "索引更新已完成，写入索引库需要等待一段时间，请稍后查看效果",
+            "message": "索引更新已完成，写入索引库需要等待一段时间",
             "item_count": item_count,
             "storage_path": str(settings.storage_path),
             "status": "ready",

@@ -9,8 +9,9 @@ describe('DashboardView regression', () => {
   it('keeps primary navigation entry points in hero and quick actions', () => {
     expect(source).toContain('@click="navigate(appRoute.newsList())"')
     expect(source).toContain('@click="navigate(appRoute.adminReviewWorkbench)"')
-    expect(source).toContain("{ label: 'AI 检测', path: '/detection/ai', icon: 'AI' }")
-    expect(source).toContain("{ label: '众包看板', path: '/evidence/crowd-board', icon: 'CB' }")
+    expect(source).toContain("{ label: '多模态分析', path: '/ai/agent', icon: 'MM' }")
+    expect(source).toContain("{ label: '专项分析', path: '/detection/ai', icon: 'SA' }")
+    expect(source).toContain("{ label: '线索上报', path: '/report', icon: 'RP' }")
   })
 
   it('keeps route normalization and detail jump wiring', () => {
@@ -24,7 +25,7 @@ describe('DashboardView regression', () => {
     expect(source).toContain('<DashboardGrid>')
     expect(source).toContain('<AlertBubble :alerts="alerts" @action="onAlertAction" />')
     expect(source).toContain('<FloatingQuickActions :items="quickActions" @navigate="navigate" />')
-    expect(source).toContain("title: 'AI 协作入口可用'")
+    expect(source).toContain("title: '反诈助手入口可用'")
   })
 
   it('keeps hero and command color bindings on semantic tokens', () => {

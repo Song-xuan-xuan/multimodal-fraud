@@ -40,7 +40,7 @@
         <span>实时预警联动</span>
       </div>
       <div class="hero-section__actions">
-        <el-button type="primary" size="large" @click="emit('primary')">开始风险分析</el-button>
+        <el-button type="primary" size="large" @click="emit('primary')">进入专项分析</el-button>
         <el-button size="large" plain @click="emit('secondary')">查看风险看板</el-button>
       </div>
     </div>

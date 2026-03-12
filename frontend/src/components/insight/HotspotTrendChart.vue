@@ -1,10 +1,8 @@
 <template>
   <div class="trend-chart-shell">
+    <div v-show="points.length && !loading" ref="chartRef" class="trend-chart-shell__canvas" />
     <el-skeleton v-if="loading" :rows="5" animated class="trend-chart-shell__state" />
-    <template v-else>
-      <div v-show="points.length" ref="chartRef" class="trend-chart-shell__canvas" />
-      <el-empty v-if="!points.length" description="暂无趋势数据" class="trend-chart-shell__state" />
-    </template>
+    <el-empty v-else-if="!points.length" description="暂无趋势数据" class="trend-chart-shell__state" />
   </div>
 </template>
 
@@ -39,7 +37,11 @@ async function ensureChart() {
 
 async function renderChart() {
   await nextTick()
-  if (!chartRef.value || !props.points.length) return
+  if (!chartRef.value) return
+  if (!props.points.length) {
+    chart?.clear()
+    return
+  }
 
   await ensureChart()
   if (!chart) return

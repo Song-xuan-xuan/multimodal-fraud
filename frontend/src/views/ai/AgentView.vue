@@ -1,7 +1,7 @@
 <template>
   <div class="agent-view page-shell">
     <div class="agent-view__intro">
-      <h2>统一多模态反诈分析</h2>
+      <h2>多模态分析</h2>
       <p>在一个入口中综合分析文本、图片截图和语音内容，输出风险判断、案例检索与个性化建议。</p>
     </div>
 
@@ -39,7 +39,7 @@
         <section class="agent-panel tech-surface">
           <div class="agent-panel__header">
             <h3>执行摘要</h3>
-            <span>面向展示与答辩的专业化结论输出</span>
+            <span>专业化结论输出</span>
           </div>
 
           <template v-if="result">

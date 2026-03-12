@@ -26,7 +26,7 @@
             {{ result.verdict }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="置信度">
+        <el-descriptions-item label="可疑度">
           <el-progress :percentage="Math.round((result.confidence || 0) * 100)" />
         </el-descriptions-item>
       </el-descriptions>

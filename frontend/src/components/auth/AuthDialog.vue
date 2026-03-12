@@ -12,8 +12,8 @@
 
     <template #header>
       <div class="auth-dialog__header">
-        <span class="auth-dialog__badge">AUTHENTIAI · ACCESS</span>
-        <span class="auth-dialog__title">欢迎使用 AuthentiAI</span>
+        <span class="auth-dialog__badge">FRAUDSHIELD · ACCESS</span>
+        <span class="auth-dialog__title">欢迎使用 FraudShield</span>
         <span class="auth-dialog__subtitle">请先登录或注册后继续访问</span>
       </div>
     </template>

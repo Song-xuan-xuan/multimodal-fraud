@@ -22,7 +22,7 @@
     <div v-else class="fallback">
       <div class="fallback-content">
         <span class="fallback-title">暂无可用图片</span>
-        <span class="fallback-subtitle">当前新闻未提供有效封面</span>
+        <span class="fallback-subtitle">当前未提供有效封面</span>
         <el-button size="small" @click="retry">重试</el-button>
       </div>
     </div>

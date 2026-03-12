@@ -2,11 +2,11 @@
   <div class="fake-news-classify-view">
     <h2 v-if="!embedded">诈骗话术分类识别</h2>
     <el-form label-position="top" class="fake-news-classify-view__form">
-      <el-form-item label="新闻标题">
-        <el-input v-model="form.title" placeholder="输入新闻标题" />
+      <el-form-item label="标题">
+        <el-input v-model="form.title" placeholder="输入标题" />
       </el-form-item>
-      <el-form-item label="新闻内容">
-        <el-input v-model="form.content" type="textarea" :rows="8" placeholder="输入新闻正文内容" />
+      <el-form-item label="内容">
+        <el-input v-model="form.content" type="textarea" :rows="8" placeholder="输入正文内容" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="detect" :loading="loading">开始分类检测</el-button>

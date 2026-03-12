@@ -523,6 +523,30 @@ onBeforeUnmount(() => {
   --el-table-text-color: var(--tech-text-primary);
 }
 
+.data-table :deep(.el-table__header-wrapper th.el-table__cell) {
+  background: rgba(86, 194, 255, 0.08) !important;
+  color: var(--tech-text-secondary);
+  border-bottom: 1px solid rgba(131, 168, 201, 0.2);
+}
+
+.data-table :deep(.el-table__row td.el-table__cell) {
+  background: rgba(8, 26, 48, 0.52) !important;
+  color: var(--tech-text-primary);
+  border-bottom: 1px solid rgba(131, 168, 201, 0.14);
+}
+
+.data-table :deep(.el-table__row--striped td.el-table__cell) {
+  background: rgba(76, 201, 255, 0.06) !important;
+}
+
+.data-table :deep(.el-table__body tr:hover > td.el-table__cell) {
+  background: rgba(76, 201, 255, 0.14) !important;
+}
+
+.data-table :deep(.el-table__inner-wrapper::before) {
+  background-color: rgba(131, 168, 201, 0.18);
+}
+
 @media (max-width: 640px) {
   .content-section,
   .drawer-section {

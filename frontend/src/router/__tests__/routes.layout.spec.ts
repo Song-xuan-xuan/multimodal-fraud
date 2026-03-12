@@ -41,7 +41,7 @@ describe('routes layout regression', () => {
 
   it('keeps path normalization for legacy page jumps', () => {
     expect(source).toContain("'/detection/ai': appRoute.aiDetect")
-    expect(source).toContain("'/evidence/crowd-board': appRoute.crowdBoard")
+    expect(source).toContain("'/community/third-party-services': appRoute.thirdPartyServices")
     expect(source).toContain("'/insight/knowledge-graph': appRoute.insightKnowledgeGraph")
     expect(source).toContain('return appRoute.newsDetail(newsDetailMatch[1])')
   })

@@ -8,7 +8,6 @@ import asyncio
 import json
 import logging
 import os
-import random
 import sys
 import tempfile
 from collections.abc import Mapping
@@ -53,18 +52,14 @@ def _normalize_ai_text_result(result: Mapping[str, object] | None) -> dict:
     details = dict(raw_details) if isinstance(raw_details, Mapping) else {}
 
     confidence = _coerce_probability(payload.get("confidence"), 0.0)
-    probability = _coerce_probability(payload.get("probability"), confidence)
+    model_probability = _coerce_probability(payload.get("probability"), confidence)
+    heuristics = _estimate_fraud_signal_probability(str(payload.get("text") or ""))
+    merged_probability = max(model_probability, heuristics["risk_probability"])
 
-    is_ai_generated = _coerce_bool(payload.get("is_ai_generated"), probability > 0.5)
-    if probability == 0.0:
-        probability = round(random.randint(1, 10) * 0.01, 4)
-    elif probability == 1.0:
-        probability = round(1.0 - random.randint(1, 10) * 0.01, 4)
-
-    confidence = probability if confidence in {0.0, 1.0} else confidence
-    is_ai_generated = probability > 0.5
-    ai_probability = round(probability, 4)
-    human_probability = round(1.0 - probability, 4)
+    is_ai_generated = _coerce_bool(payload.get("is_ai_generated"), merged_probability > 0.45)
+    confidence = merged_probability if confidence in {0.0, 1.0} else max(confidence, merged_probability)
+    ai_probability = round(merged_probability, 4)
+    human_probability = round(1.0 - merged_probability, 4)
 
     label = "高风险话术" if is_ai_generated else "低风险文本"
     summary = f"高风险表达概率 {ai_probability * 100:.1f}%，低风险表达概率 {human_probability * 100:.1f}%。"
@@ -76,8 +71,8 @@ def _normalize_ai_text_result(result: Mapping[str, object] | None) -> dict:
 
     return {
         "is_ai_generated": is_ai_generated,
-        "confidence": confidence if "confidence" in payload else probability,
-        "probability": probability,
+        "confidence": confidence if "confidence" in payload else merged_probability,
+        "probability": merged_probability,
         "label": label,
         "overall_label": label,
         "summary": summary,
@@ -86,8 +81,47 @@ def _normalize_ai_text_result(result: Mapping[str, object] | None) -> dict:
             **details,
             "ai_probability": ai_probability,
             "human_probability": human_probability,
+            "model_probability": round(model_probability, 4),
+            "rule_probability": round(heuristics["risk_probability"], 4),
+            "risk_signal_hits": heuristics["matched_signals"],
+            "protective_hits": heuristics["protective_signals"],
         },
     }
+
+
+def _estimate_fraud_signal_probability(text: str) -> dict[str, object]:
+    content = (text or "").strip()
+    if not content:
+        return {"risk_probability": 0.0, "matched_signals": [], "protective_signals": []}
+
+    fraud_signals = [
+        "转账", "汇款", "收款码", "扫码", "二维码", "验证码", "银行卡", "密码",
+        "点击链接", "下载", "客服", "退款", "征信", "刷单", "投资", "充值",
+        "任务", "担保", "保证金", "紧急", "截止", "限时", "立刻",
+    ]
+    protective_signals = ["核实", "确认", "回拨", "报警", "谨慎", "不要", "防范", "建议"]
+
+    matched = [token for token in fraud_signals if token in content]
+    protective = [token for token in protective_signals if token in content]
+
+    score = 0.02
+    if len(matched) >= 1:
+        score += 0.18
+    if len(matched) >= 3:
+        score += 0.22
+    if len(matched) >= 5:
+        score += 0.2
+
+    if any(token in content for token in ["转账", "汇款", "收款码", "扫码", "二维码"]):
+        score += 0.16
+    if any(token in content for token in ["验证码", "银行卡", "密码"]):
+        score += 0.16
+    if any(token in content for token in ["紧急", "截止", "限时", "立刻"]):
+        score += 0.12
+
+    score -= min(0.2, len(protective) * 0.05)
+    score = max(0.0, min(0.95, score))
+    return {"risk_probability": round(score, 4), "matched_signals": matched, "protective_signals": protective}
 
 
 async def detect_ai_text(text: str) -> dict:
@@ -96,22 +130,87 @@ async def detect_ai_text(text: str) -> dict:
     try:
         from model.ai_text.service import detect
         result = await asyncio.to_thread(detect, text)
-        return _normalize_ai_text_result(result)
+        payload = dict(result) if isinstance(result, Mapping) else {}
+        payload["text"] = text
+        return _normalize_ai_text_result(payload)
     except Exception as e:
         logger.error("AI text detection error: %s", e)
         return _normalize_ai_text_result({"is_ai_generated": False, "confidence": 0.0, "details": {"error": str(e)}})
 
 
 async def detect_ai_image(image_bytes: bytes, filename: str) -> dict:
-    """AI-generated image detection using AIorNot model."""
+    """Screenshot risk analysis (fraud-oriented), with AIorNot fallback."""
     logger.info("AI image detection: %s", filename)
+
+    # Primary path: fraud-scene visual analysis
+    try:
+        from app.services.vision_service import analyze_image_fraud_risk
+
+        visual = await analyze_image_fraud_risk(image_bytes, filename)
+        raw_score = visual.get("risk_score", 0.0)
+        score = _coerce_probability(raw_score if isinstance(raw_score, (int, float)) and raw_score <= 1 else (float(raw_score) / 100.0 if raw_score else 0.0))
+        risk_level = str(visual.get("risk_level") or "").lower()
+        fraud_types = visual.get("fraud_types") or []
+        matched_signals = visual.get("matched_signals") or []
+        ocr_text = str(visual.get("ocr_text") or "")
+        scene_type = str(visual.get("scene_type") or "")
+
+        label = scene_type or ("高风险截图" if score >= 0.6 else ("中风险截图" if score >= 0.35 else "低风险截图"))
+        is_risky = score >= 0.45
+        summary = str(visual.get("summary") or f"截图风险概率 {score * 100:.1f}%，建议结合对话背景继续核验。")
+        conclusion = str(visual.get("conclusion") or ("截图命中多个风险信号，建议先核验再操作。" if is_risky else "截图整体风险较低，但仍建议谨慎核验。"))
+
+        return {
+            "is_ai_generated": is_risky,
+            "confidence": score,
+            "probability": score,
+            "label": label,
+            "overall_label": label,
+            "summary": summary,
+            "conclusion": conclusion,
+            "details": {
+                "engine": "vision-fraud",
+                "risk_level": risk_level,
+                "fraud_types": fraud_types,
+                "matched_signals": matched_signals,
+                "ocr_text": ocr_text,
+            },
+        }
+    except Exception as vision_exc:
+        logger.warning("Visual fraud analysis unavailable, fallback to AIorNot: %s", vision_exc)
+
+    # Fallback path: AI-generated image detection
     try:
         from model.ai_image.service import classify_image
+
         result = await asyncio.to_thread(classify_image, image_bytes)
-        return result
+        prob = _coerce_probability(result.get("confidence"), 0.0)
+        is_ai = bool(result.get("is_ai_generated", False))
+        label = str(result.get("label", "unknown"))
+        summary = f"诈骗概率 {prob * 100:.1f}%"
+        conclusion = "图片疑似 AI 合成，建议结合来源与上下文进一步核验。" if is_ai else "图片更接近真实拍摄，但不代表内容真实性，请继续核验。"
+        return {
+            "is_ai_generated": is_ai,
+            "confidence": prob,
+            "probability": prob,
+            "label": label,
+            "overall_label": label,
+            "summary": summary,
+            "conclusion": conclusion,
+            "details": {"engine": "aiornot"},
+        }
     except Exception as e:
         logger.error("AI image detection error: %s", e)
-        return {"is_ai_generated": False, "confidence": 0.0, "label": str(e)}
+        return {
+            "is_ai_generated": False,
+            "confidence": 0.0,
+            "probability": 0.0,
+            "label": "error",
+            "overall_label": "error",
+            "summary": "截图分析失败，请稍后重试。",
+            "conclusion": str(e),
+            "details": {"error": str(e)},
+        }
 
 
 async def detect_multimodal(text: str, image_bytes: bytes | None = None) -> dict:
