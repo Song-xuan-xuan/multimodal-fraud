@@ -10,6 +10,7 @@ export default defineConfig({
     },
   },
   server: {
+    allowedHosts: ['fwwb.songtf.cn'],
     port: 5173,
     proxy: {
       '/api': {

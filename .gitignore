@@ -9,6 +9,7 @@ node_modules/
 frontend/node_modules/
 frontend/dist/
 frontend/.claude/
+frontend/INIT.md
 # Env
 envs/
 .venv/
@@ -30,6 +31,7 @@ backend/app/static/
 backend/__pycache__
 backend/.env
 backend/app/static/case_data/*.json
+backend/INIT.md
 # Large local datasets
 
 

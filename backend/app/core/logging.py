@@ -12,5 +12,5 @@ def setup_logging() -> None:
         handlers=[logging.StreamHandler(sys.stdout)],
     )
     # Suppress noisy third-party loggers
-    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+    logging.getLogger("uvicorn.access").setLevel(logging.INFO)
     logging.getLogger("httpx").setLevel(logging.WARNING)
