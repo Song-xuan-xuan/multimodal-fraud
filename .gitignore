@@ -10,6 +10,9 @@ frontend/node_modules/
 frontend/dist/
 frontend/.claude/
 frontend/INIT.md
+
+
+frontend2/
 # Env
 envs/
 .venv/

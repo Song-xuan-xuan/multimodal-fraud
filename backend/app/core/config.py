@@ -61,7 +61,7 @@ class Settings(BaseSettings):
     USE_OPENAI_API: bool = True
     MAX_CONTENT_LENGTH: int = 16 * 1024 * 1024
 
-    CORS_ORIGINS: str = '["http://localhost:5173","http://localhost:3000"]'
+    CORS_ORIGINS: str = '["http://localhost:5173","http://localhost:5174","http://localhost:3000"]'
 
     BASE_DIR: Path = Path(__file__).parent.parent.parent
     UPLOAD_FOLDER: str = "uploads"
