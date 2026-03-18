@@ -34,8 +34,7 @@ backend/app/static/case_data/*.json
 backend/INIT.md
 # Large local datasets
 
-
-
+test-dataset/
 AGENTS.md
 
 docs/

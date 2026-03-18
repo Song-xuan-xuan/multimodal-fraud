@@ -1,0 +1,1948 @@
+[
+  {
+    "case_id": "TXT_BLACK_001",
+    "label": 1,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.79,
+          "probability": 0.79,
+          "label": "高风险话术",
+          "overall_label": "高风险话术",
+          "summary": "高风险表达概率 79.0%，低风险表达概率 21.0%。",
+          "conclusion": "文本中存在较强风险话术特征，建议结合上下文、身份声明和资金要求进一步核验。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.79,
+            "human_probability": 0.21,
+            "model_probability": 0.0,
+            "rule_probability": 0.79,
+            "risk_signal_hits": [
+              "转账",
+              "扫码",
+              "二维码",
+              "验证码",
+              "银行卡",
+              "下载",
+              "客服",
+              "退款",
+              "征信",
+              "投资",
+              "充值"
+            ],
+            "protective_hits": [
+              "报警",
+              "防范",
+              "建议"
+            ]
+          }
+        },
+        "risk": "high"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.7777788639068604,
+          "probability": 0.7777788639068604,
+          "label": "AI",
+          "summary": "诈骗概率 77.8%",
+          "conclusion": "图片疑似 AI 合成，建议结合来源与上下文进一步核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "high"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_002",
+    "label": 1,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.43,
+          "probability": 0.43,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 43.0%，低风险表达概率 57.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.43,
+            "human_probability": 0.57,
+            "model_probability": 0.0,
+            "rule_probability": 0.43,
+            "risk_signal_hits": [
+              "银行卡",
+              "客服",
+              "投资",
+              "充值"
+            ],
+            "protective_hits": [
+              "报警",
+              "谨慎",
+              "不要"
+            ]
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.7816371917724609,
+          "probability": 0.7816371917724609,
+          "label": "AI",
+          "summary": "诈骗概率 78.2%",
+          "conclusion": "图片疑似 AI 合成，建议结合来源与上下文进一步核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "high"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_003",
+    "label": 1,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.15,
+          "probability": 0.15,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 15.0%，低风险表达概率 85.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.15,
+            "human_probability": 0.85,
+            "model_probability": 0.0,
+            "rule_probability": 0.15,
+            "risk_signal_hits": [
+              "下载"
+            ],
+            "protective_hits": [
+              "防范"
+            ]
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.7866197824478149,
+          "probability": 0.7866197824478149,
+          "label": "AI",
+          "summary": "诈骗概率 78.7%",
+          "conclusion": "图片疑似 AI 合成，建议结合来源与上下文进一步核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "high"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_004",
+    "label": 1,
+    "risk_level": "medium",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.5,
+          "probability": 0.5,
+          "label": "高风险话术",
+          "overall_label": "高风险话术",
+          "summary": "高风险表达概率 50.0%，低风险表达概率 50.0%。",
+          "conclusion": "文本中存在较强风险话术特征，建议结合上下文、身份声明和资金要求进一步核验。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.5,
+            "human_probability": 0.5,
+            "model_probability": 0.0,
+            "rule_probability": 0.5,
+            "risk_signal_hits": [
+              "转账",
+              "下载",
+              "投资",
+              "紧急"
+            ],
+            "protective_hits": [
+              "核实",
+              "报警",
+              "谨慎",
+              "不要"
+            ]
+          }
+        },
+        "risk": "medium"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.5821889638900757,
+          "probability": 0.5821889638900757,
+          "label": "real",
+          "summary": "诈骗概率 58.2%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_005",
+    "label": 1,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.02,
+          "probability": 0.02,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 2.0%，低风险表达概率 98.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.02,
+            "human_probability": 0.98,
+            "model_probability": 0.0,
+            "rule_probability": 0.02,
+            "risk_signal_hits": [],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.9942353367805481,
+          "probability": 0.9942353367805481,
+          "label": "AI",
+          "summary": "诈骗概率 99.4%",
+          "conclusion": "图片疑似 AI 合成，建议结合来源与上下文进一步核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "high"
+      },
+      {
+        "modality": "audio",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.0,
+          "probability": 0.0,
+          "label": "待复核",
+          "overall_label": "待复核",
+          "summary": "语音分析失败，请检查转写服务配置后重试。",
+          "conclusion": "语音转写服务返回错误 (HTTP 400): {\"error\":{\"code\":\"1214\",\"message\":\"transcriptions文件时长限制为0-30秒\"}}",
+          "transcript": "",
+          "details": {
+            "error": "语音转写服务返回错误 (HTTP 400): {\"error\":{\"code\":\"1214\",\"message\":\"transcriptions文件时长限制为0-30秒\"}}",
+            "input_modality": "audio",
+            "filename": "TXT_BLACK_005.wav"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_006",
+    "label": 1,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.2,
+          "probability": 0.2,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 20.0%，低风险表达概率 80.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.2,
+            "human_probability": 0.8,
+            "model_probability": 0.02,
+            "rule_probability": 0.2,
+            "risk_signal_hits": [
+              "下载"
+            ],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.9785812497138977,
+          "probability": 0.9785812497138977,
+          "label": "AI",
+          "summary": "诈骗概率 97.9%",
+          "conclusion": "图片疑似 AI 合成，建议结合来源与上下文进一步核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "high"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_007",
+    "label": 1,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.44,
+          "probability": 0.44,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 44.0%，低风险表达概率 56.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.44,
+            "human_probability": 0.56,
+            "model_probability": 0.0,
+            "rule_probability": 0.44,
+            "risk_signal_hits": [
+              "下载",
+              "任务",
+              "立刻"
+            ],
+            "protective_hits": [
+              "确认",
+              "不要"
+            ]
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.6438935399055481,
+          "probability": 0.6438935399055481,
+          "label": "real",
+          "summary": "诈骗概率 64.4%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_008",
+    "label": 1,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.2,
+          "probability": 0.2,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 20.0%，低风险表达概率 80.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.2,
+            "human_probability": 0.8,
+            "model_probability": 0.0,
+            "rule_probability": 0.2,
+            "risk_signal_hits": [
+              "下载",
+              "投资"
+            ],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.6214417815208435,
+          "probability": 0.6214417815208435,
+          "label": "real",
+          "summary": "诈骗概率 62.1%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_009",
+    "label": 1,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.73,
+          "probability": 0.73,
+          "label": "高风险话术",
+          "overall_label": "高风险话术",
+          "summary": "高风险表达概率 73.0%，低风险表达概率 27.0%。",
+          "conclusion": "文本中存在较强风险话术特征，建议结合上下文、身份声明和资金要求进一步核验。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.73,
+            "human_probability": 0.27,
+            "model_probability": 0.0,
+            "rule_probability": 0.73,
+            "risk_signal_hits": [
+              "转账",
+              "扫码",
+              "下载",
+              "刷单",
+              "充值",
+              "任务"
+            ],
+            "protective_hits": [
+              "不要"
+            ]
+          }
+        },
+        "risk": "high"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.873619019985199,
+          "probability": 0.873619019985199,
+          "label": "real",
+          "summary": "诈骗概率 87.4%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_010",
+    "label": 1,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.79,
+          "probability": 0.79,
+          "label": "高风险话术",
+          "overall_label": "高风险话术",
+          "summary": "高风险表达概率 79.0%，低风险表达概率 21.0%。",
+          "conclusion": "文本中存在较强风险话术特征，建议结合上下文、身份声明和资金要求进一步核验。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.79,
+            "human_probability": 0.21,
+            "model_probability": 0.0,
+            "rule_probability": 0.79,
+            "risk_signal_hits": [
+              "转账",
+              "汇款",
+              "扫码",
+              "二维码",
+              "银行卡",
+              "下载",
+              "征信",
+              "刷单",
+              "投资",
+              "任务"
+            ],
+            "protective_hits": [
+              "核实",
+              "报警",
+              "不要"
+            ]
+          }
+        },
+        "risk": "high"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.9131438732147217,
+          "probability": 0.9131438732147217,
+          "label": "AI",
+          "summary": "诈骗概率 91.3%",
+          "conclusion": "图片疑似 AI 合成，建议结合来源与上下文进一步核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "high"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_011",
+    "label": 1,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.84,
+          "probability": 0.84,
+          "label": "高风险话术",
+          "overall_label": "高风险话术",
+          "summary": "高风险表达概率 84.0%，低风险表达概率 16.0%。",
+          "conclusion": "文本中存在较强风险话术特征，建议结合上下文、身份声明和资金要求进一步核验。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.84,
+            "human_probability": 0.16,
+            "model_probability": 0.0,
+            "rule_probability": 0.84,
+            "risk_signal_hits": [
+              "转账",
+              "验证码",
+              "银行卡",
+              "客服",
+              "退款",
+              "刷单",
+              "充值",
+              "任务",
+              "保证金"
+            ],
+            "protective_hits": [
+              "核实",
+              "防范"
+            ]
+          }
+        },
+        "risk": "high"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.7499476075172424,
+          "probability": 0.7499476075172424,
+          "label": "real",
+          "summary": "诈骗概率 75.0%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_012",
+    "label": 1,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.02,
+          "probability": 0.02,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 2.0%，低风险表达概率 98.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.02,
+            "human_probability": 0.98,
+            "model_probability": 0.02,
+            "rule_probability": 0.02,
+            "risk_signal_hits": [],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.8470946550369263,
+          "probability": 0.8470946550369263,
+          "label": "AI",
+          "summary": "诈骗概率 84.7%",
+          "conclusion": "图片疑似 AI 合成，建议结合来源与上下文进一步核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "high"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_013",
+    "label": 1,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.78,
+          "probability": 0.78,
+          "label": "高风险话术",
+          "overall_label": "高风险话术",
+          "summary": "高风险表达概率 78.0%，低风险表达概率 22.0%。",
+          "conclusion": "文本中存在较强风险话术特征，建议结合上下文、身份声明和资金要求进一步核验。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.78,
+            "human_probability": 0.22,
+            "model_probability": 0.0,
+            "rule_probability": 0.78,
+            "risk_signal_hits": [
+              "验证码",
+              "银行卡",
+              "密码",
+              "退款",
+              "刷单",
+              "任务"
+            ],
+            "protective_hits": []
+          }
+        },
+        "risk": "high"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.7432014346122742,
+          "probability": 0.7432014346122742,
+          "label": "real",
+          "summary": "诈骗概率 74.3%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_014",
+    "label": 1,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.02,
+          "probability": 0.02,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 2.0%，低风险表达概率 98.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.02,
+            "human_probability": 0.98,
+            "model_probability": 0.02,
+            "rule_probability": 0.0,
+            "risk_signal_hits": [],
+            "protective_hits": [
+              "防范"
+            ]
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.5151735544204712,
+          "probability": 0.5151735544204712,
+          "label": "real",
+          "summary": "诈骗概率 51.5%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_015",
+    "label": 1,
+    "risk_level": "medium",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.48,
+          "probability": 0.48,
+          "label": "高风险话术",
+          "overall_label": "高风险话术",
+          "summary": "高风险表达概率 48.0%，低风险表达概率 52.0%。",
+          "conclusion": "文本中存在较强风险话术特征，建议结合上下文、身份声明和资金要求进一步核验。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.48,
+            "human_probability": 0.52,
+            "model_probability": 0.0,
+            "rule_probability": 0.48,
+            "risk_signal_hits": [
+              "转账",
+              "下载",
+              "投资"
+            ],
+            "protective_hits": [
+              "报警",
+              "不要"
+            ]
+          }
+        },
+        "risk": "medium"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.6652884483337402,
+          "probability": 0.6652884483337402,
+          "label": "real",
+          "summary": "诈骗概率 66.5%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_016",
+    "label": 1,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.58,
+          "probability": 0.58,
+          "label": "高风险话术",
+          "overall_label": "高风险话术",
+          "summary": "高风险表达概率 58.0%，低风险表达概率 42.0%。",
+          "conclusion": "文本中存在较强风险话术特征，建议结合上下文、身份声明和资金要求进一步核验。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.58,
+            "human_probability": 0.42,
+            "model_probability": 0.0,
+            "rule_probability": 0.58,
+            "risk_signal_hits": [
+              "转账",
+              "退款",
+              "充值"
+            ],
+            "protective_hits": []
+          }
+        },
+        "risk": "medium"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.9657031893730164,
+          "probability": 0.9657031893730164,
+          "label": "AI",
+          "summary": "诈骗概率 96.6%",
+          "conclusion": "图片疑似 AI 合成，建议结合来源与上下文进一步核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "high"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_017",
+    "label": 1,
+    "risk_level": "medium",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.6,
+          "probability": 0.6,
+          "label": "高风险话术",
+          "overall_label": "高风险话术",
+          "summary": "高风险表达概率 60.0%，低风险表达概率 40.0%。",
+          "conclusion": "文本中存在较强风险话术特征，建议结合上下文、身份声明和资金要求进一步核验。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.6,
+            "human_probability": 0.4,
+            "model_probability": 0.0,
+            "rule_probability": 0.6,
+            "risk_signal_hits": [
+              "转账",
+              "扫码",
+              "保证金",
+              "紧急"
+            ],
+            "protective_hits": [
+              "核实",
+              "报警"
+            ]
+          }
+        },
+        "risk": "medium"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.7169261574745178,
+          "probability": 0.7169261574745178,
+          "label": "real",
+          "summary": "诈骗概率 71.7%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_018",
+    "label": 1,
+    "risk_level": "medium",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.53,
+          "probability": 0.53,
+          "label": "高风险话术",
+          "overall_label": "高风险话术",
+          "summary": "高风险表达概率 53.0%，低风险表达概率 47.0%。",
+          "conclusion": "文本中存在较强风险话术特征，建议结合上下文、身份声明和资金要求进一步核验。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.53,
+            "human_probability": 0.47,
+            "model_probability": 0.0,
+            "rule_probability": 0.53,
+            "risk_signal_hits": [
+              "转账",
+              "下载",
+              "投资"
+            ],
+            "protective_hits": [
+              "建议"
+            ]
+          }
+        },
+        "risk": "medium"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.9693397283554077,
+          "probability": 0.9693397283554077,
+          "label": "real",
+          "summary": "诈骗概率 96.9%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_019",
+    "label": 1,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.79,
+          "probability": 0.79,
+          "label": "高风险话术",
+          "overall_label": "高风险话术",
+          "summary": "高风险表达概率 79.0%，低风险表达概率 21.0%。",
+          "conclusion": "文本中存在较强风险话术特征，建议结合上下文、身份声明和资金要求进一步核验。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.79,
+            "human_probability": 0.21,
+            "model_probability": 0.0,
+            "rule_probability": 0.79,
+            "risk_signal_hits": [
+              "转账",
+              "扫码",
+              "二维码",
+              "验证码",
+              "银行卡",
+              "密码",
+              "点击链接",
+              "下载",
+              "客服",
+              "刷单",
+              "充值"
+            ],
+            "protective_hits": [
+              "核实",
+              "确认",
+              "防范"
+            ]
+          }
+        },
+        "risk": "high"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.9938370585441589,
+          "probability": 0.9938370585441589,
+          "label": "real",
+          "summary": "诈骗概率 99.4%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_BLACK_020",
+    "label": 1,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.64,
+          "probability": 0.64,
+          "label": "高风险话术",
+          "overall_label": "高风险话术",
+          "summary": "高风险表达概率 64.0%，低风险表达概率 36.0%。",
+          "conclusion": "文本中存在较强风险话术特征，建议结合上下文、身份声明和资金要求进一步核验。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.64,
+            "human_probability": 0.36,
+            "model_probability": 0.0,
+            "rule_probability": 0.64,
+            "risk_signal_hits": [
+              "转账",
+              "汇款",
+              "密码",
+              "刷单"
+            ],
+            "protective_hits": [
+              "核实",
+              "不要"
+            ]
+          }
+        },
+        "risk": "medium"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.812681257724762,
+          "probability": 0.812681257724762,
+          "label": "AI",
+          "summary": "诈骗概率 81.3%",
+          "conclusion": "图片疑似 AI 合成，建议结合来源与上下文进一步核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "high"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_001",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.36,
+          "probability": 0.36,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 36.0%，低风险表达概率 64.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.36,
+            "human_probability": 0.64,
+            "model_probability": 0.06,
+            "rule_probability": 0.36,
+            "risk_signal_hits": [
+              "密码"
+            ],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.98487389087677,
+          "probability": 0.98487389087677,
+          "label": "real",
+          "summary": "诈骗概率 98.5%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_002",
+    "label": 0,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.0,
+          "probability": 0.0,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 0.0%，低风险表达概率 100.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.0,
+            "human_probability": 1.0,
+            "model_probability": 0.0,
+            "rule_probability": 0.0,
+            "risk_signal_hits": [],
+            "protective_hits": [
+              "谨慎"
+            ]
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.9912965297698975,
+          "probability": 0.9912965297698975,
+          "label": "AI",
+          "summary": "诈骗概率 99.1%",
+          "conclusion": "图片疑似 AI 合成，建议结合来源与上下文进一步核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "high"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_003",
+    "label": 0,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.43,
+          "probability": 0.43,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 43.0%，低风险表达概率 57.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.43,
+            "human_probability": 0.57,
+            "model_probability": 0.0,
+            "rule_probability": 0.43,
+            "risk_signal_hits": [
+              "密码",
+              "下载",
+              "任务"
+            ],
+            "protective_hits": [
+              "确认",
+              "不要",
+              "建议"
+            ]
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.9997934699058533,
+          "probability": 0.9997934699058533,
+          "label": "AI",
+          "summary": "诈骗概率 100.0%",
+          "conclusion": "图片疑似 AI 合成，建议结合来源与上下文进一步核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "high"
+      },
+      {
+        "modality": "audio",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.0,
+          "probability": 0.0,
+          "label": "待复核",
+          "overall_label": "待复核",
+          "summary": "语音分析失败，请检查转写服务配置后重试。",
+          "conclusion": "语音转写服务返回错误 (HTTP 400): {\"error\":{\"code\":\"1214\",\"message\":\"transcriptions文件时长限制为0-30秒\"}}",
+          "transcript": "",
+          "details": {
+            "error": "语音转写服务返回错误 (HTTP 400): {\"error\":{\"code\":\"1214\",\"message\":\"transcriptions文件时长限制为0-30秒\"}}",
+            "input_modality": "audio",
+            "filename": "TXT_WHITE_003.wav"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_004",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.1,
+          "probability": 0.1,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 10.0%，低风险表达概率 90.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.1,
+            "human_probability": 0.9,
+            "model_probability": 0.0,
+            "rule_probability": 0.1,
+            "risk_signal_hits": [
+              "任务"
+            ],
+            "protective_hits": [
+              "防范",
+              "建议"
+            ]
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_005",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.0,
+          "probability": 0.0,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 0.0%，低风险表达概率 100.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.0,
+            "human_probability": 1.0,
+            "model_probability": 0.0,
+            "rule_probability": 0.0,
+            "risk_signal_hits": [
+              "任务"
+            ],
+            "protective_hits": [
+              "报警",
+              "谨慎",
+              "不要",
+              "防范",
+              "建议"
+            ]
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_006",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.2,
+          "probability": 0.2,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 20.0%，低风险表达概率 80.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.2,
+            "human_probability": 0.8,
+            "model_probability": 0.0,
+            "rule_probability": 0.2,
+            "risk_signal_hits": [
+              "任务"
+            ],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.996253252029419,
+          "probability": 0.996253252029419,
+          "label": "real",
+          "summary": "诈骗概率 99.6%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_007",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.21,
+          "probability": 0.21,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 21.0%，低风险表达概率 79.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.21,
+            "human_probability": 0.79,
+            "model_probability": 0.0,
+            "rule_probability": 0.21,
+            "risk_signal_hits": [
+              "密码",
+              "任务"
+            ],
+            "protective_hits": [
+              "谨慎",
+              "防范",
+              "建议"
+            ]
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_008",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.0,
+          "probability": 0.0,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 0.0%，低风险表达概率 100.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.0,
+            "human_probability": 1.0,
+            "model_probability": 0.0,
+            "rule_probability": 0.0,
+            "risk_signal_hits": [],
+            "protective_hits": [
+              "防范"
+            ]
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_009",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.0,
+          "probability": 0.0,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 0.0%，低风险表达概率 100.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.0,
+            "human_probability": 1.0,
+            "model_probability": 0.0,
+            "rule_probability": 0.0,
+            "risk_signal_hits": [],
+            "protective_hits": [
+              "防范"
+            ]
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_010",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.02,
+          "probability": 0.02,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 2.0%，低风险表达概率 98.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.02,
+            "human_probability": 0.98,
+            "model_probability": 0.0,
+            "rule_probability": 0.02,
+            "risk_signal_hits": [],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_011",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.02,
+          "probability": 0.02,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 2.0%，低风险表达概率 98.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.02,
+            "human_probability": 0.98,
+            "model_probability": 0.0,
+            "rule_probability": 0.02,
+            "risk_signal_hits": [],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.9983206391334534,
+          "probability": 0.9983206391334534,
+          "label": "real",
+          "summary": "诈骗概率 99.8%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_012",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.1,
+          "probability": 0.1,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 10.0%，低风险表达概率 90.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.1,
+            "human_probability": 0.9,
+            "model_probability": 0.0,
+            "rule_probability": 0.1,
+            "risk_signal_hits": [
+              "下载",
+              "任务"
+            ],
+            "protective_hits": [
+              "不要",
+              "建议"
+            ]
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_013",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.1,
+          "probability": 0.1,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 10.0%，低风险表达概率 90.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.1,
+            "human_probability": 0.9,
+            "model_probability": 0.0,
+            "rule_probability": 0.1,
+            "risk_signal_hits": [
+              "任务"
+            ],
+            "protective_hits": [
+              "防范",
+              "建议"
+            ]
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_014",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.43,
+          "probability": 0.43,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 43.0%，低风险表达概率 57.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.43,
+            "human_probability": 0.57,
+            "model_probability": 0.0,
+            "rule_probability": 0.43,
+            "risk_signal_hits": [
+              "银行卡",
+              "立刻"
+            ],
+            "protective_hits": [
+              "报警"
+            ]
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_015",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.2,
+          "probability": 0.2,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 20.0%，低风险表达概率 80.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.2,
+            "human_probability": 0.8,
+            "model_probability": 0.0,
+            "rule_probability": 0.2,
+            "risk_signal_hits": [
+              "下载"
+            ],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_016",
+    "label": 0,
+    "risk_level": "high",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.2,
+          "probability": 0.2,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 20.0%，低风险表达概率 80.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.2,
+            "human_probability": 0.8,
+            "model_probability": 0.0,
+            "rule_probability": 0.2,
+            "risk_signal_hits": [
+              "任务"
+            ],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.7603279948234558,
+          "probability": 0.7603279948234558,
+          "label": "AI",
+          "summary": "诈骗概率 76.0%",
+          "conclusion": "图片疑似 AI 合成，建议结合来源与上下文进一步核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "high"
+      },
+      {
+        "modality": "audio",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.0,
+          "probability": 0.0,
+          "label": "待复核",
+          "overall_label": "待复核",
+          "summary": "语音分析失败，请检查转写服务配置后重试。",
+          "conclusion": "语音转写服务返回错误 (HTTP 400): {\"error\":{\"code\":\"1214\",\"message\":\"transcriptions文件时长限制为0-30秒\"}}",
+          "transcript": "",
+          "details": {
+            "error": "语音转写服务返回错误 (HTTP 400): {\"error\":{\"code\":\"1214\",\"message\":\"transcriptions文件时长限制为0-30秒\"}}",
+            "input_modality": "audio",
+            "filename": "TXT_WHITE_016.wav"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_017",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.2,
+          "probability": 0.2,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 20.0%，低风险表达概率 80.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.2,
+            "human_probability": 0.8,
+            "model_probability": 0.0,
+            "rule_probability": 0.2,
+            "risk_signal_hits": [
+              "任务"
+            ],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_018",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.02,
+          "probability": 0.02,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 2.0%，低风险表达概率 98.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.02,
+            "human_probability": 0.98,
+            "model_probability": 0.0,
+            "rule_probability": 0.02,
+            "risk_signal_hits": [],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_019",
+    "label": 0,
+    "risk_level": "low",
+    "prediction": 0,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.2,
+          "probability": 0.2,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 20.0%，低风险表达概率 80.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.2,
+            "human_probability": 0.8,
+            "model_probability": 0.0,
+            "rule_probability": 0.2,
+            "risk_signal_hits": [
+              "任务"
+            ],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.8642758727073669,
+          "probability": 0.8642758727073669,
+          "label": "real",
+          "summary": "诈骗概率 86.4%",
+          "conclusion": "图片更接近真实拍摄，但不代表内容真实性，请继续核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  },
+  {
+    "case_id": "TXT_WHITE_020",
+    "label": 0,
+    "risk_level": "medium",
+    "prediction": 1,
+    "sub_results": [
+      {
+        "modality": "text",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.2,
+          "probability": 0.2,
+          "label": "低风险文本",
+          "overall_label": "低风险文本",
+          "summary": "高风险表达概率 20.0%，低风险表达概率 80.0%。",
+          "conclusion": "文本整体风险较低，但仍建议结合场景、对象身份和资金要求继续复核。",
+          "details": {
+            "method": "Fast-DetectGPT",
+            "model": "gpt2-distil-chinese",
+            "ai_probability": 0.2,
+            "human_probability": 0.8,
+            "model_probability": 0.0,
+            "rule_probability": 0.2,
+            "risk_signal_hits": [
+              "任务"
+            ],
+            "protective_hits": []
+          }
+        },
+        "risk": "low"
+      },
+      {
+        "modality": "image",
+        "result": {
+          "is_ai_generated": true,
+          "confidence": 0.5664341449737549,
+          "probability": 0.5664341449737549,
+          "label": "AI",
+          "summary": "诈骗概率 56.6%",
+          "conclusion": "图片疑似 AI 合成，建议结合来源与上下文进一步核验。",
+          "details": {
+            "engine": "aiornot"
+          }
+        },
+        "risk": "medium"
+      },
+      {
+        "modality": "audio",
+        "result": {
+          "is_ai_generated": false,
+          "confidence": 0.0,
+          "probability": 0.0,
+          "label": "待复核",
+          "overall_label": "待复核",
+          "summary": "语音分析失败，请检查转写服务配置后重试。",
+          "conclusion": "语音转写服务返回错误 (HTTP 400): {\"error\":{\"code\":\"1214\",\"message\":\"transcriptions文件时长限制为0-30秒\"}}",
+          "transcript": "",
+          "details": {
+            "error": "语音转写服务返回错误 (HTTP 400): {\"error\":{\"code\":\"1214\",\"message\":\"transcriptions文件时长限制为0-30秒\"}}",
+            "input_modality": "audio",
+            "filename": "TXT_WHITE_020.wav"
+          }
+        },
+        "risk": "low"
+      }
+    ]
+  }
+]
