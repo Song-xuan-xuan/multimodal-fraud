@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_user
+from app.core.deps import get_current_admin_user
 from app.db.base import get_db
 from app.schemas.knowledge import (
     KnowledgeItemCreate,
@@ -14,6 +14,7 @@ from app.services.knowledge_service import (
     KNOWLEDGE_CREATE_DEMO_MODE,
     build_demo_knowledge_item,
     create_knowledge_item,
+    delete_knowledge_item,
     list_knowledge_items,
     rebuild_knowledge_index,
     review_knowledge_item,
@@ -26,7 +27,7 @@ router = APIRouter()
 @router.get("/items", response_model=KnowledgeItemListResponse)
 async def list_knowledge(
     status: str | None = Query(default=None),
-    user=Depends(get_current_user),
+    user=Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
     items = await list_knowledge_items(db, status=status)
@@ -37,7 +38,7 @@ async def list_knowledge(
 @router.post("/items", response_model=KnowledgeItemResponse)
 async def create_knowledge(
     req: KnowledgeItemCreate,
-    user=Depends(get_current_user),
+    user=Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
     if KNOWLEDGE_CREATE_DEMO_MODE:
@@ -52,15 +53,25 @@ async def create_knowledge(
 async def review_knowledge(
     item_id: int,
     req: KnowledgeItemReviewRequest,
-    user=Depends(get_current_user),
+    user=Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
     item = await review_knowledge_item(db, item_id=item_id, status=req.status, reviewer=user.username, reason=req.reason)
     return KnowledgeItemResponse(**serialize_knowledge_item(item))
 
 
+@router.delete("/items/{item_id}")
+async def delete_knowledge(
+    item_id: int,
+    user=Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    await delete_knowledge_item(db, item_id=item_id)
+    return {"message": "知识条目已删除", "id": item_id}
+
+
 @router.post("/rebuild-index", response_model=KnowledgeRebuildResponse)
-async def rebuild_index(user=Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+async def rebuild_index(user=Depends(get_current_admin_user), db: AsyncSession = Depends(get_db)):
     try:
         result = await rebuild_knowledge_index(db)
         return KnowledgeRebuildResponse(**result)

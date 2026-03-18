@@ -48,6 +48,9 @@ class Settings(BaseSettings):
     LOCAL_MODEL_NAME: str = "gpt-neo-2.7B"
     LOCAL_MODEL_REF_PATH: str = "text_aigc/local_infer_ref"
     LOCAL_MODEL_CACHE_DIR: str = "../cache"
+    RAG_BACKEND: str = "chroma"
+    CHROMA_PERSIST_DIR: str = "storage/chroma_db"
+    CHROMA_COLLECTION_NAME: str = "fraud_knowledge"
 
     SIMILARITY_TOP_K: int = 3
     CHUNK_SIZE: int = 512
@@ -86,6 +89,10 @@ class Settings(BaseSettings):
     @property
     def storage_path(self) -> Path:
         return self.BASE_DIR / self.STORAGE_DIR
+
+    @property
+    def chroma_path(self) -> Path:
+        return self.BASE_DIR / self.CHROMA_PERSIST_DIR
 
 
 _settings: Settings | None = None

@@ -25,6 +25,7 @@ async def lifespan(app: FastAPI):
     settings.upload_path.mkdir(parents=True, exist_ok=True)
     settings.data_path.mkdir(parents=True, exist_ok=True)
     settings.storage_path.mkdir(parents=True, exist_ok=True)
+    settings.chroma_path.mkdir(parents=True, exist_ok=True)
 
     # Initialize database
     await init_db()

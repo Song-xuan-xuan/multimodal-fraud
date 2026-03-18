@@ -10,10 +10,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import get_settings
 from app.db.models.knowledge_item import KnowledgeItem
 from app.db.models.report import Report
-from app.services.rag_service import append_rag_documents, load_index_manifest, rebuild_rag_index
+from app.services.rag_service import append_rag_documents, load_index_manifest, persist_index_manifest, rebuild_rag_index
+from model.rag.service import has_persisted_rag_index
 
-KNOWLEDGE_CREATE_DEMO_MODE = True
-KNOWLEDGE_REBUILD_DEMO_MODE = True
+KNOWLEDGE_CREATE_DEMO_MODE = False
+KNOWLEDGE_REBUILD_DEMO_MODE = False
 
 
 async def create_knowledge_item(db: AsyncSession, payload: dict, submitted_by: str) -> KnowledgeItem:
@@ -62,6 +63,16 @@ async def review_knowledge_item(db: AsyncSession, item_id: int, status: str, rev
     item.updated_at = datetime.now(timezone.utc)
     await db.flush()
     return item
+
+
+async def delete_knowledge_item(db: AsyncSession, item_id: int) -> None:
+    result = await db.execute(select(KnowledgeItem).where(KnowledgeItem.id == item_id))
+    item = result.scalar_one_or_none()
+    if not item:
+        raise HTTPException(status_code=404, detail="知识条目不存在")
+
+    await db.delete(item)
+    await db.flush()
 
 
 def serialize_knowledge_item(item: KnowledgeItem) -> dict:
@@ -150,7 +161,7 @@ async def rebuild_knowledge_index(db: AsyncSession) -> dict:
         return {
             "message": "索引更新已完成，写入索引库需要等待一段时间",
             "item_count": item_count,
-            "storage_path": str(settings.storage_path),
+            "storage_path": str(settings.chroma_path),
             "status": "ready",
         }
 
@@ -166,6 +177,7 @@ async def rebuild_knowledge_index(db: AsyncSession) -> dict:
     settings = get_settings()
     manifest = load_index_manifest(settings.storage_path)
     indexed_item_ids = set(manifest.get("indexed_item_ids", []))
+    rag_ready = has_persisted_rag_index(settings.chroma_path, settings.CHROMA_COLLECTION_NAME)
 
     new_payload = [
         {
@@ -190,15 +202,26 @@ async def rebuild_knowledge_index(db: AsyncSession) -> dict:
         return {
             "message": "当前没有已审核通过的知识条目可用于索引",
             "item_count": 0,
-            "storage_path": str(settings.storage_path),
+            "storage_path": str(settings.chroma_path),
             "status": "ready",
         }
 
-    if not new_payload:
+    if not new_payload and rag_ready:
         return {
             "message": "没有新的已审核知识需要追加，已保留现有索引",
             "item_count": item_count,
-            "storage_path": str(settings.storage_path),
+            "storage_path": str(settings.chroma_path),
+            "status": "ready",
+        }
+
+    if not rag_ready:
+        storage_path = rebuild_rag_index(export_path)
+        approved_ids = [item.item_id for item in items if item.item_id]
+        persist_index_manifest(settings.storage_path, approved_ids)
+        return {
+            "message": f"反诈知识库索引重建完成，共写入 {item_count} 条知识",
+            "item_count": item_count,
+            "storage_path": str(storage_path),
             "status": "ready",
         }
 

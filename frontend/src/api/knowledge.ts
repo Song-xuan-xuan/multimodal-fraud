@@ -24,6 +24,11 @@ export const knowledgeApi = {
     return data as KnowledgeItemResponse
   },
 
+  async delete(itemId: number) {
+    const { data } = await api.delete(`/knowledge/items/${itemId}`)
+    return data as { message: string; id: number }
+  },
+
   async rebuildIndex() {
     const { data } = await api.post('/knowledge/rebuild-index')
     return data as KnowledgeRebuildResponse

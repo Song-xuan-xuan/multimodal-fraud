@@ -509,7 +509,7 @@ router.beforeEach((to) => {
 
   if (to.meta.adminOnly) {
     const username = (authStore.username || '').trim().toLowerCase()
-    const adminAllowlist = ['admin', 'administrator', 'superadmin']
+    const adminAllowlist = ['admin']
     if (!adminAllowlist.includes(username)) {
       return { name: appRouteName.dashboard }
     }

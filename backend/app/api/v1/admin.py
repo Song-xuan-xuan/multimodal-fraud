@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_user
+from app.core.deps import get_current_admin_user
 from app.db.base import get_db
 from app.db.models.news import NewsArticle
 from app.db.models.report import Report
@@ -15,7 +15,7 @@ router = APIRouter()
 
 
 @router.get("/stats")
-async def get_stats(db: AsyncSession = Depends(get_db), user=Depends(get_current_user)):
+async def get_stats(db: AsyncSession = Depends(get_db), user=Depends(get_current_admin_user)):
     total_users = (await db.execute(select(func.count()).select_from(User))).scalar() or 0
     total_news = (await db.execute(select(func.count()).select_from(NewsArticle))).scalar() or 0
     total_fake = (
@@ -42,7 +42,7 @@ async def get_stats(db: AsyncSession = Depends(get_db), user=Depends(get_current
 
 
 @router.get("/submissions")
-async def list_submissions(db: AsyncSession = Depends(get_db), user=Depends(get_current_user)):
+async def list_submissions(db: AsyncSession = Depends(get_db), user=Depends(get_current_admin_user)):
     result = await db.execute(select(Report).order_by(Report.created_at.desc()).limit(100))
     items = result.scalars().all()
     return {
@@ -71,7 +71,7 @@ async def review_submission(
     submission_id: int,
     req: dict,
     db: AsyncSession = Depends(get_db),
-    user=Depends(get_current_user),
+    user=Depends(get_current_admin_user),
 ):
     result = await db.execute(select(Report).where(Report.id == submission_id))
     item = result.scalar_one_or_none()
@@ -106,7 +106,7 @@ async def review_submission(
 async def promote_submission_to_knowledge(
     submission_id: int,
     db: AsyncSession = Depends(get_db),
-    user=Depends(get_current_user),
+    user=Depends(get_current_admin_user),
 ):
     try:
         knowledge_item = await create_knowledge_from_report(db, submission_id, submitted_by=user.username)

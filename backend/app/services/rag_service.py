@@ -1,7 +1,5 @@
 import json
 import logging
-import os
-import shutil
 import sys
 import threading
 import uuid
@@ -53,60 +51,6 @@ def persist_index_manifest(storage_path: Path, indexed_item_ids: list[str]) -> N
     )
 
 
-def _persist_snapshot_atomically(storage_context, storage_path: Path) -> None:
-    """Persist index files through a temp directory, then atomically replace live files.
-
-    LlamaIndex writes JSON snapshots by truncating and rewriting target files. Writing into
-    a temp directory first avoids exposing partially-written live files during demos.
-    """
-    storage_path.mkdir(parents=True, exist_ok=True)
-    temp_path = storage_path.parent / f'{storage_path.name}.tmp.{uuid.uuid4().hex}'
-
-    try:
-        temp_path.mkdir(parents=True, exist_ok=True)
-        storage_context.persist(persist_dir=str(temp_path))
-        for item in temp_path.iterdir():
-            if item.is_file():
-                os.replace(item, storage_path / item.name)
-    finally:
-        if temp_path.exists():
-            shutil.rmtree(temp_path, ignore_errors=True)
-
-
-def _build_document_payload(item: dict) -> dict:
-    item_type = item.get('type', 'case')
-    tags = item.get('tags', []) or []
-    target_groups = item.get('target_groups', []) or []
-    signals = item.get('signals', []) or []
-    advice = item.get('advice', []) or []
-
-    text = (
-        f"类型: {item_type}\n"
-        f"标题: {item.get('title', '')}\n"
-        f"诈骗类型: {item.get('fraud_type', '')}\n"
-        f"适用人群: {', '.join(target_groups)}\n"
-        f"风险信号: {'；'.join(signals)}\n"
-        f"正文: {item.get('content', '')}\n"
-        f"结论: {item.get('conclusion', '')}\n"
-        f"建议: {'；'.join(advice)}\n"
-        f"来源: {item.get('source', '')}"
-    )
-    metadata = {
-        'item_id': item.get('id', ''),
-        'item_type': item_type,
-        'fraud_type': item.get('fraud_type', ''),
-        'source': item.get('source', ''),
-        'tags': tags,
-    }
-    return {'text': text, 'metadata': metadata}
-
-
-def _build_documents(documents_data: list[dict]):
-    from llama_index.core import Document
-
-    return [Document(**_build_document_payload(item)) for item in documents_data]
-
-
 def ensure_rag_initialized():
     global _initialized, _init_error, _initializing
     if _initialized or _initializing:
@@ -120,13 +64,14 @@ def ensure_rag_initialized():
         service = get_rag_service()
         service.build_or_load(
             data_path=_resolve_rag_data_path(),
-            storage_path=settings.storage_path,
+            storage_path=settings.chroma_path,
             api_key=settings.OPENAI_API_KEY,
             api_base=settings.OPENAI_BASE_URL,
             model=settings.OPENAI_MODEL,
             embedding_model=settings.EMBEDDING_MODEL,
             embedding_device=settings.EMBEDDING_DEVICE,
             chunk_size=settings.CHUNK_SIZE,
+            collection_name=settings.CHROMA_COLLECTION_NAME,
         )
         _initialized = True
         _init_error = None
@@ -168,17 +113,20 @@ def rebuild_rag_index(data_path: str | Path):
     service = get_rag_service()
     service.rebuild(
         data_path=data_path,
-        storage_path=settings.storage_path,
+        storage_path=settings.chroma_path,
         api_key=settings.OPENAI_API_KEY,
         api_base=settings.OPENAI_BASE_URL,
         model=settings.OPENAI_MODEL,
         embedding_model=settings.EMBEDDING_MODEL,
         embedding_device=settings.EMBEDDING_DEVICE,
         chunk_size=settings.CHUNK_SIZE,
+        collection_name=settings.CHROMA_COLLECTION_NAME,
     )
     _initialized = True
     _init_error = None
-    return settings.storage_path
+    manifest = load_index_manifest(settings.storage_path)
+    persist_index_manifest(settings.storage_path, manifest.get('indexed_item_ids', []))
+    return settings.chroma_path
 
 
 def append_rag_documents(documents_data: list[dict]) -> tuple[Path, int]:
@@ -186,31 +134,15 @@ def append_rag_documents(documents_data: list[dict]) -> tuple[Path, int]:
 
     if not documents_data:
         settings = get_settings()
-        return settings.storage_path, 0
+        return settings.chroma_path, 0
 
-    from llama_index.core import StorageContext, load_index_from_storage
-    from llama_index.core import Settings, Document
-    from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-    from model.common.device import resolve_device
     from model.rag.service import get_rag_service, has_persisted_rag_index
 
     settings = get_settings()
-    storage_path = settings.storage_path
-    storage_path.mkdir(parents=True, exist_ok=True)
-
-    resolved_embedding_device = resolve_device(settings.EMBEDDING_DEVICE)
-    if resolved_embedding_device != settings.EMBEDDING_DEVICE:
-        logger.warning(
-            'Embedding device %s unavailable, falling back to %s',
-            settings.EMBEDDING_DEVICE,
-            resolved_embedding_device,
-        )
-
-    Settings.embed_model = HuggingFaceEmbedding(
-        model_name=settings.EMBEDDING_MODEL,
-        device=resolved_embedding_device,
-    )
-    Settings.chunk_size = settings.CHUNK_SIZE
+    manifest_storage_path = settings.storage_path
+    chroma_path = settings.chroma_path
+    manifest_storage_path.mkdir(parents=True, exist_ok=True)
+    chroma_path.mkdir(parents=True, exist_ok=True)
 
     service = get_rag_service()
     service._api_key = settings.OPENAI_API_KEY
@@ -218,43 +150,48 @@ def append_rag_documents(documents_data: list[dict]) -> tuple[Path, int]:
     service._model = settings.OPENAI_MODEL
     service._temperature = 0.2
 
-    if not has_persisted_rag_index(storage_path):
-        temp_export = settings.data_path / 'fraud_knowledge.json'
+    if not has_persisted_rag_index(chroma_path, settings.CHROMA_COLLECTION_NAME):
+        temp_export = settings.data_path / f'fraud_knowledge.append.{uuid.uuid4().hex}.json'
         temp_export.write_text(json.dumps(documents_data, ensure_ascii=False, indent=2), encoding='utf-8')
-        service.build_or_load(
-            data_path=temp_export,
-            storage_path=storage_path,
-            api_key=settings.OPENAI_API_KEY,
-            api_base=settings.OPENAI_BASE_URL,
-            model=settings.OPENAI_MODEL,
-            embedding_model=settings.EMBEDDING_MODEL,
-            embedding_device=settings.EMBEDDING_DEVICE,
-            chunk_size=settings.CHUNK_SIZE,
-        )
-        persist_index_manifest(storage_path, [str(item.get('id')) for item in documents_data if item.get('id')])
+        try:
+            service.build_or_load(
+                data_path=temp_export,
+                storage_path=chroma_path,
+                api_key=settings.OPENAI_API_KEY,
+                api_base=settings.OPENAI_BASE_URL,
+                model=settings.OPENAI_MODEL,
+                embedding_model=settings.EMBEDDING_MODEL,
+                embedding_device=settings.EMBEDDING_DEVICE,
+                chunk_size=settings.CHUNK_SIZE,
+                collection_name=settings.CHROMA_COLLECTION_NAME,
+            )
+        finally:
+            if temp_export.exists():
+                temp_export.unlink()
+
+        persist_index_manifest(manifest_storage_path, [str(item.get('id')) for item in documents_data if item.get('id')])
         _initialized = True
         _init_error = None
-        return storage_path, len(documents_data)
+        return chroma_path, len(documents_data)
 
-    if service._index is None:
-        storage_context = StorageContext.from_defaults(persist_dir=str(storage_path))
-        service._index = load_index_from_storage(storage_context)
+    appended_count = service.append_documents(
+        documents_data=documents_data,
+        storage_path=chroma_path,
+        embedding_model=settings.EMBEDDING_MODEL,
+        embedding_device=settings.EMBEDDING_DEVICE,
+        chunk_size=settings.CHUNK_SIZE,
+        collection_name=settings.CHROMA_COLLECTION_NAME,
+    )
 
-    documents = [Document(**_build_document_payload(item)) for item in documents_data]
-    for document in documents:
-        service._index.insert(document)
-
-    _persist_snapshot_atomically(service._index.storage_context, storage_path)
-
-    manifest = load_index_manifest(storage_path)
+    manifest = load_index_manifest(manifest_storage_path)
     indexed_item_ids = set(manifest.get('indexed_item_ids', []))
     indexed_item_ids.update(str(item.get('id')) for item in documents_data if item.get('id'))
-    persist_index_manifest(storage_path, list(indexed_item_ids))
+    persist_index_manifest(manifest_storage_path, list(indexed_item_ids))
 
     _initialized = True
     _init_error = None
-    logger.info('Appended %d RAG documents', len(documents))
-    return storage_path, len(documents)
+    logger.info('Appended %d RAG documents into Chroma', appended_count)
+    return chroma_path, appended_count
 
 
 async def ask_question(question: str, session_id: str | None = None) -> dict:

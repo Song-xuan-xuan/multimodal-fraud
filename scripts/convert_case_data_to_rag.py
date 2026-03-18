@@ -67,6 +67,8 @@ def convert_file(path: Path, prefix: str) -> tuple[list[dict], dict]:
 
     records: list[dict] = []
     skipped = 0
+    deduplicated = 0
+    seen_pairs: set[tuple[str, str]] = set()
     for item in source_data:
         if not isinstance(item, dict):
             skipped += 1
@@ -78,6 +80,14 @@ def convert_file(path: Path, prefix: str) -> tuple[list[dict], dict]:
             skipped += 1
             continue
 
+        dedupe_key = (title, content)
+        if dedupe_key in seen_pairs:
+            deduplicated += 1
+            skipped += 1
+            continue
+
+        seen_pairs.add(dedupe_key)
+
         records.append(build_record(prefix, len(records), website_name, source_url, item))
 
     stats = {
@@ -86,6 +96,7 @@ def convert_file(path: Path, prefix: str) -> tuple[list[dict], dict]:
         "source_total": len(source_data),
         "converted": len(records),
         "skipped": skipped,
+        "deduplicated": deduplicated,
     }
     return records, stats
 
@@ -146,7 +157,7 @@ def main() -> None:
     for stats in all_stats:
         print(
             f"- {stats['file']}: converted={stats['converted']} skipped={stats['skipped']} "
-            f"source_total={stats['source_total']} prefix={stats['prefix']}"
+            f"deduplicated={stats['deduplicated']} source_total={stats['source_total']} prefix={stats['prefix']}"
         )
 
 

@@ -29,4 +29,22 @@ describe('ReviewWorkbenchView regression', () => {
     expect(source).toContain('v-if="!hasAccess"')
     expect(source).toContain('仅管理员可见该页面')
   })
+
+  it('reloads knowledge list after creating or promoting entries', () => {
+    expect(source).toMatch(/async function submitKnowledge[\s\S]*await loadKnowledge\(\)/)
+    expect(source).toMatch(/async function promoteSubmissionToKnowledge[\s\S]*await loadKnowledge\(\)/)
+  })
+
+  it('shows knowledge content preview in the knowledge table', () => {
+    expect(source).toContain('prop="content"')
+    expect(source).toContain('label="描述"')
+    expect(source).toContain('show-overflow-tooltip')
+  })
+
+  it('uses delete action for knowledge items instead of reject review', () => {
+    expect(source).toContain('@click="deleteKnowledge(row.id)"')
+    expect(source).toContain('>删除</el-button>')
+    expect(source).toContain('knowledgeApi.delete')
+    expect(source).not.toContain("@click=\"reviewKnowledge(row.id, 'rejected')\"")
+  })
 })

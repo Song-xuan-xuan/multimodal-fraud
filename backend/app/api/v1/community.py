@@ -19,16 +19,6 @@ from app.services.evidence_service import build_user_evidence_stats, serialize_e
 
 router = APIRouter()
 
-
-@router.get("/evidence/{news_id}", response_model=list[EvidenceItem])
-async def list_evidence(news_id: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(
-        select(Evidence).where(Evidence.news_id == news_id).order_by(Evidence.submitted_at.desc())
-    )
-    evidences = result.scalars().all()
-    return [EvidenceItem(**serialize_evidence_item(item)) for item in evidences]
-
-
 @router.post("/evidence", response_model=EvidenceItem)
 async def submit_evidence(
     req: SubmitEvidenceRequest,
@@ -70,6 +60,13 @@ async def get_my_evidence_stats(
     stats = await build_user_evidence_stats(db, user.username)
     return MyEvidenceStatsResponse(**stats)
 
+@router.get("/evidence/{news_id}", response_model=list[EvidenceItem])
+async def list_evidence(news_id: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(Evidence).where(Evidence.news_id == news_id).order_by(Evidence.submitted_at.desc())
+    )
+    evidences = result.scalars().all()
+    return [EvidenceItem(**serialize_evidence_item(item)) for item in evidences]
 
 @router.get("/leaderboard", response_model=LeaderboardResponse)
 async def get_leaderboard(db: AsyncSession = Depends(get_db)):

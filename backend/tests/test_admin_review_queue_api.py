@@ -15,6 +15,7 @@ if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
 import app.api.v1.admin as admin_api
+from app.core import deps as core_deps
 from app.api.v1.admin import router as admin_router
 from app.db.base import Base
 from app.db.models.report import Report
@@ -31,7 +32,7 @@ class AdminReviewQueueApiTests(unittest.TestCase):
 
         self.app = FastAPI()
         self.app.include_router(admin_router, prefix="/api/v1/admin")
-        self.app.dependency_overrides[admin_api.get_current_user] = lambda: SimpleNamespace(username="admin")
+        self.app.dependency_overrides[admin_api.get_current_admin_user] = lambda: SimpleNamespace(username="admin")
         self.app.dependency_overrides[admin_api.get_db] = self._override_get_db
         self.client = TestClient(self.app)
 
@@ -106,6 +107,24 @@ class AdminReviewQueueApiTests(unittest.TestCase):
         self.assertEqual([item["status"] for item in data["items"]], ["pending", "approved", "rejected"])
         self.assertEqual(data["items"][1]["reviewed_by"], "admin")
         self.assertEqual(data["items"][2]["review_reason"], "信息不足")
+
+    def test_submissions_forbidden_for_non_admin_user(self) -> None:
+        self.app.dependency_overrides.pop(admin_api.get_current_admin_user, None)
+        self.app.dependency_overrides[core_deps.get_current_user] = lambda: SimpleNamespace(username="alice")
+
+        resp = self.client.get("/api/v1/admin/submissions")
+
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(resp.json()["detail"], "无权限访问")
+
+    def test_submissions_forbidden_for_legacy_admin_alias(self) -> None:
+        self.app.dependency_overrides.pop(admin_api.get_current_admin_user, None)
+        self.app.dependency_overrides[core_deps.get_current_user] = lambda: SimpleNamespace(username="administrator")
+
+        resp = self.client.get("/api/v1/admin/submissions")
+
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(resp.json()["detail"], "无权限访问")
 
 
 if __name__ == "__main__":

@@ -110,13 +110,14 @@
           <el-table-column prop="item_id" label="标识" width="140" />
           <el-table-column prop="item_type" label="类型" width="100" />
           <el-table-column prop="title" label="标题" min-width="220" show-overflow-tooltip />
+          <el-table-column prop="content" label="描述" min-width="320" show-overflow-tooltip />
           <el-table-column prop="fraud_type" label="诈骗类型" width="140" />
           <el-table-column prop="status" label="状态" width="110" />
           <el-table-column prop="source" label="来源" width="140" show-overflow-tooltip />
           <el-table-column label="操作" width="210">
             <template #default="{ row }">
               <el-button text type="success" @click="reviewKnowledge(row.id, 'approved')">通过</el-button>
-              <el-button text type="danger" @click="reviewKnowledge(row.id, 'rejected')">驳回</el-button>
+              <el-button text type="danger" @click="deleteKnowledge(row.id)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -153,7 +154,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import ReviewQueueTable from '@/components/admin/ReviewQueueTable.vue'
 import { adminReviewApi } from '@/api/adminReview'
 import { knowledgeApi } from '@/api/knowledge'
@@ -164,7 +165,7 @@ import SectionHeader from '@/components/dashboard/SectionHeader.vue'
 import PageHero from '@/components/page/PageHero.vue'
 
 const authStore = useAuthStore()
-const ADMIN_USERNAMES = ['admin', 'administrator', 'superadmin']
+const ADMIN_USERNAMES = ['admin']
 
 const activeTab = ref<'pending' | 'reviewed'>('pending')
 const loading = ref(false)
@@ -334,6 +335,7 @@ async function submitKnowledge() {
     knowledgeItems.value = [item, ...knowledgeItems.value]
     resetKnowledgeForm()
     ElMessage.success('知识条目提交成功')
+    await loadKnowledge()
   } catch (error: any) {
     ElMessage.error(error?.response?.data?.detail || '新增知识条目失败')
   } finally {
@@ -357,6 +359,25 @@ async function reviewKnowledge(itemId: number, status: 'approved' | 'rejected') 
   }
 }
 
+async function deleteKnowledge(itemId: number) {
+  try {
+    await ElMessageBox.confirm('确定删除这条知识条目吗？删除后将无法恢复。', '提示', { type: 'warning' })
+
+    if (itemId < 0) {
+      knowledgeItems.value = knowledgeItems.value.filter((entry) => entry.id !== itemId)
+      ElMessage.success('知识条目已删除')
+      return
+    }
+
+    const result = await knowledgeApi.delete(itemId)
+    knowledgeItems.value = knowledgeItems.value.filter((entry) => entry.id !== result.id)
+    ElMessage.success(result.message)
+  } catch (error: any) {
+    if (error === 'cancel' || error === 'close' || error?.message === 'cancel') return
+    ElMessage.error(error?.response?.data?.detail || '删除知识条目失败')
+  }
+}
+
 async function rebuildKnowledgeIndex() {
   rebuildLoading.value = true
   try {
@@ -374,6 +395,7 @@ async function promoteSubmissionToKnowledge(row: AdminReviewItem) {
     const response = await adminReviewApi.promoteToKnowledge(row.id)
     knowledgeItems.value = [response.item, ...knowledgeItems.value.filter((entry) => entry.id !== response.item.id)]
     ElMessage.success(response.message)
+    await loadKnowledge()
   } catch (error: any) {
     ElMessage.error(error?.response?.data?.detail || '加入知识库失败')
   }

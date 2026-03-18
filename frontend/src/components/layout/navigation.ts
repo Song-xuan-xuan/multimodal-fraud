@@ -13,7 +13,7 @@ export type NavigationGroup = {
   items: NavigationItem[]
 }
 
-export const ADMIN_USERNAMES = ['admin', 'administrator', 'superadmin'] as const
+export const ADMIN_USERNAMES = ['admin'] as const
 
 export function isAdminUsername(username: string | null | undefined) {
   return ADMIN_USERNAMES.includes(String(username || '').trim().toLowerCase() as (typeof ADMIN_USERNAMES)[number])

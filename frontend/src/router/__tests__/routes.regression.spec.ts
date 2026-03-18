@@ -20,7 +20,7 @@ describe('route regression for backend governance pages', () => {
   it('keeps admin-only guard for review workbench route', () => {
     expect(source).toContain('meta: { adminOnly: true }')
     expect(source).toContain('if (to.meta.adminOnly)')
-    expect(source).toContain("const adminAllowlist = ['admin', 'administrator', 'superadmin']")
+    expect(source).toContain("const adminAllowlist = ['admin']")
     expect(source).toContain("layout: 'backend'")
   })
 })
