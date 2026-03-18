@@ -1,0 +1,232 @@
+:root,
+html[data-theme='dark-tech'] {
+  --tech-font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --tech-color-brand-50: #eafcff;
+  --tech-color-brand-100: #c8f6ff;
+  --tech-color-brand-200: #9aefff;
+  --tech-color-brand-300: #62e4ff;
+  --tech-color-brand-400: #27d6ff;
+  --tech-color-brand-500: #00c6fb;
+  --tech-color-brand-600: #00a7dc;
+  --tech-color-brand-700: #008abc;
+  --tech-color-brand-800: #006f98;
+  --tech-color-brand-900: #0b4265;
+  --tech-color-brand-deep: #071a2f;
+  --tech-color-brand-cyan: #00c6fb;
+  --tech-color-brand-blue: #008abc;
+  --tech-color-brand-gradient-start: #00c6fb;
+  --tech-color-brand-gradient-end: #008abc;
+  --tech-color-brand-gradient-legacy-start: #0a84ff;
+  --tech-color-brand-gradient: linear-gradient(135deg, var(--tech-color-brand-gradient-start) 0%, var(--tech-color-brand-gradient-end) 100%);
+  --tech-color-brand-gradient-soft: linear-gradient(135deg, rgba(0, 198, 251, 0.24) 0%, rgba(0, 138, 188, 0.12) 100%);
+  --tech-color-brand-gradient-legacy: var(--tech-color-brand-gradient);
+
+  --tech-color-primary: var(--tech-color-brand-500);
+  --tech-color-primary-strong: var(--tech-color-brand-300);
+  --tech-color-primary-soft: rgba(0, 198, 251, 0.16);
+
+  --tech-color-success: #37d67a;
+  --tech-color-success-soft: rgba(55, 214, 122, 0.16);
+  --tech-color-warning: #ffb347;
+  --tech-color-warning-soft: rgba(255, 179, 71, 0.18);
+  --tech-color-danger: #ff6b8b;
+  --tech-color-danger-soft: rgba(255, 107, 139, 0.16);
+  --tech-color-info: #5cb8ff;
+  --tech-color-info-soft: rgba(92, 184, 255, 0.16);
+
+  --app-accent-primary: var(--tech-color-primary);
+  --app-accent-primary-strong: var(--tech-color-primary-strong);
+  --app-accent-primary-soft: var(--tech-color-primary-soft);
+  --app-status-success: var(--tech-color-success);
+  --app-status-success-soft: var(--tech-color-success-soft);
+  --app-status-warning: var(--tech-color-warning);
+  --app-status-warning-soft: var(--tech-color-warning-soft);
+  --app-status-danger: var(--tech-color-danger);
+  --app-status-danger-soft: var(--tech-color-danger-soft);
+  --app-status-info: var(--tech-color-info);
+  --app-status-info-soft: var(--tech-color-info-soft);
+
+  --tech-bg-base: #07111f;
+  --tech-bg-canvas: #030b16;
+  --tech-bg-surface: rgba(8, 20, 38, 0.88);
+  --tech-bg-surface-strong: rgba(7, 17, 31, 0.94);
+  --tech-bg-surface-soft: rgba(12, 28, 52, 0.72);
+  --tech-bg-elevated: rgba(10, 24, 45, 0.96);
+  --tech-bg-overlay: rgba(12, 30, 56, 0.98);
+  --tech-bg-panel: linear-gradient(180deg, rgba(14, 36, 66, 0.96) 0%, rgba(7, 17, 31, 0.98) 100%);
+  --tech-bg-panel-muted: linear-gradient(180deg, rgba(11, 28, 52, 0.92) 0%, rgba(5, 13, 24, 0.96) 100%);
+  --tech-bg-accent: var(--tech-color-brand-gradient-soft);
+  --tech-bg-grid: radial-gradient(circle at top, rgba(0, 198, 251, 0.18), transparent 45%);
+  --tech-bg-card: linear-gradient(180deg, rgba(13, 32, 58, 0.92) 0%, rgba(7, 17, 31, 0.96) 100%);
+  --tech-bg-card-hover: linear-gradient(180deg, rgba(15, 39, 70, 0.96) 0%, rgba(8, 20, 38, 0.98) 100%);
+  --tech-bg-card-active: linear-gradient(180deg, rgba(0, 198, 251, 0.16) 0%, rgba(7, 17, 31, 0.98) 100%);
+  --tech-bg-button-secondary: rgba(255, 255, 255, 0.04);
+  --tech-bg-button-secondary-hover: rgba(255, 255, 255, 0.08);
+  --tech-bg-button-secondary-active: rgba(255, 255, 255, 0.12);
+
+  --app-surface-page: var(--tech-bg-base);
+  --app-surface-canvas: var(--tech-bg-canvas);
+  --app-surface-panel: var(--tech-bg-panel);
+  --app-surface-panel-muted: var(--tech-bg-panel-muted);
+  --app-surface-card: var(--tech-bg-card);
+  --app-surface-card-hover: var(--tech-bg-card-hover);
+  --app-surface-card-active: var(--tech-bg-card-active);
+  --app-surface-glass: var(--tech-bg-surface);
+  --app-surface-glass-strong: var(--tech-bg-surface-strong);
+  --app-surface-soft: var(--tech-bg-surface-soft);
+  --app-surface-elevated: var(--tech-bg-elevated);
+  --app-surface-overlay: var(--tech-bg-overlay);
+  --app-surface-accent: var(--tech-bg-accent);
+  --app-surface-evidence: var(--tech-bg-card);
+  --app-surface-note: var(--tech-bg-surface-soft);
+  --app-surface-warning: linear-gradient(180deg, color-mix(in srgb, var(--app-status-warning) 18%, transparent) 0%, var(--tech-bg-surface-strong) 100%);
+  --app-surface-danger: linear-gradient(180deg, color-mix(in srgb, var(--app-status-danger) 18%, transparent) 0%, var(--tech-bg-surface-strong) 100%);
+  --app-surface-success: linear-gradient(180deg, color-mix(in srgb, var(--app-status-success) 18%, transparent) 0%, var(--tech-bg-surface-strong) 100%);
+  --app-surface-info: linear-gradient(180deg, color-mix(in srgb, var(--app-status-info) 18%, transparent) 0%, var(--tech-bg-surface-strong) 100%);
+
+  --tech-text-primary: #eef7ff;
+  --tech-text-regular: rgba(238, 247, 255, 0.88);
+  --tech-text-secondary: rgba(203, 223, 245, 0.72);
+  --tech-text-tertiary: rgba(170, 194, 220, 0.6);
+  --tech-text-placeholder: rgba(170, 194, 220, 0.52);
+  --tech-text-disabled: rgba(140, 164, 191, 0.4);
+  --tech-text-inverse: #05111f;
+  --tech-text-brand: var(--tech-color-brand-300);
+  --tech-text-success: var(--tech-color-success);
+  --tech-text-warning: var(--tech-color-warning);
+  --tech-text-danger: var(--tech-color-danger);
+
+  --app-text-primary: var(--tech-text-primary);
+  --app-text-regular: var(--tech-text-regular);
+  --app-text-secondary: var(--tech-text-secondary);
+  --app-text-tertiary: var(--tech-text-tertiary);
+  --app-text-placeholder: var(--tech-text-placeholder);
+  --app-text-disabled: var(--tech-text-disabled);
+  --app-text-inverse: var(--tech-text-inverse);
+  --app-text-brand: var(--tech-text-brand);
+  --app-text-success: var(--tech-text-success);
+  --app-text-warning: var(--tech-text-warning);
+  --app-text-danger: var(--tech-text-danger);
+
+  --tech-border-color: rgba(0, 138, 188, 0.2);
+  --tech-border-color-soft: rgba(0, 138, 188, 0.12);
+  --tech-border-strong: rgba(0, 198, 251, 0.38);
+  --tech-border-accent: rgba(0, 198, 251, 0.28);
+  --tech-border-focus: rgba(0, 198, 251, 0.56);
+  --tech-divider-color: rgba(148, 190, 226, 0.12);
+
+  --app-border-default: var(--tech-border-color);
+  --app-border-soft: var(--tech-border-color-soft);
+  --app-border-strong: var(--tech-border-strong);
+  --app-border-accent: var(--tech-border-accent);
+  --app-border-focus: var(--tech-border-focus);
+  --app-divider: var(--tech-divider-color);
+
+  --tech-button-primary-bg: var(--tech-color-brand-gradient);
+  --tech-button-primary-text: var(--tech-text-inverse);
+  --tech-button-primary-shadow: 0 12px 30px rgba(0, 138, 188, 0.28);
+  --tech-button-primary-hover-shadow: 0 18px 38px rgba(0, 138, 188, 0.36);
+  --tech-button-secondary-border: rgba(0, 198, 251, 0.24);
+  --tech-button-secondary-text: var(--tech-text-primary);
+  --tech-button-ghost-text: var(--tech-color-brand-300);
+  --tech-button-ghost-bg-hover: rgba(0, 198, 251, 0.12);
+
+  --app-action-primary-bg: var(--tech-button-primary-bg);
+  --app-action-primary-text: var(--tech-button-primary-text);
+  --app-action-primary-shadow: var(--tech-button-primary-shadow);
+  --app-action-primary-shadow-hover: var(--tech-button-primary-hover-shadow);
+  --app-action-secondary-bg: var(--tech-bg-button-secondary);
+  --app-action-secondary-bg-hover: var(--tech-bg-button-secondary-hover);
+  --app-action-secondary-bg-active: var(--tech-bg-button-secondary-active);
+  --app-action-secondary-border: var(--tech-button-secondary-border);
+  --app-action-secondary-text: var(--tech-button-secondary-text);
+  --app-action-ghost-text: var(--tech-button-ghost-text);
+  --app-action-ghost-bg-hover: var(--tech-button-ghost-bg-hover);
+
+  --tech-card-border: rgba(0, 138, 188, 0.2);
+  --tech-card-border-hover: rgba(0, 198, 251, 0.34);
+  --tech-card-shadow: 0 14px 38px rgba(1, 8, 20, 0.3);
+  --tech-card-shadow-hover: 0 20px 48px rgba(0, 12, 28, 0.38);
+  --tech-card-glow: 0 0 0 1px rgba(0, 198, 251, 0.14), 0 0 28px rgba(0, 198, 251, 0.14);
+
+  --tech-chart-1: #00c6fb;
+  --tech-chart-2: #37d67a;
+  --tech-chart-3: #ffb347;
+  --tech-chart-4: #ff6b8b;
+  --tech-chart-5: #9b8cff;
+  --tech-chart-6: #5ce1e6;
+  --tech-chart-7: #72c5ff;
+  --tech-chart-8: #ffd166;
+  --tech-chart-positive: var(--tech-color-success);
+  --tech-chart-negative: var(--tech-color-danger);
+  --tech-chart-neutral: var(--tech-color-info);
+
+  --tech-shadow-sm: 0 8px 24px rgba(3, 10, 22, 0.22);
+  --tech-shadow-md: 0 14px 38px rgba(1, 8, 20, 0.3);
+  --tech-shadow-lg: 0 24px 64px rgba(1, 8, 20, 0.42);
+  --tech-shadow-glow: 0 0 0 1px rgba(0, 198, 251, 0.16), 0 0 24px rgba(0, 198, 251, 0.18);
+
+  --tech-radius-xs: 6px;
+  --tech-radius-sm: 10px;
+  --tech-radius-md: 16px;
+  --tech-radius-lg: 24px;
+  --tech-radius-pill: 999px;
+
+  --tech-space-1: 4px;
+  --tech-space-2: 8px;
+  --tech-space-3: 12px;
+  --tech-space-4: 16px;
+  --tech-space-5: 20px;
+  --tech-space-6: 24px;
+  --tech-space-8: 32px;
+  --tech-space-10: 40px;
+
+  --tech-z-base: 1;
+  --tech-z-sticky: 20;
+  --tech-z-dropdown: 60;
+  --tech-z-overlay: 100;
+  --tech-z-modal: 120;
+
+  --tech-duration-fast: 180ms;
+  --tech-duration-base: 280ms;
+  --tech-duration-slow: 480ms;
+  --tech-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --tech-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --el-color-primary: var(--tech-color-primary);
+  --el-color-primary-light-3: var(--tech-color-brand-300);
+  --el-color-primary-light-5: var(--tech-color-brand-200);
+  --el-color-primary-light-7: rgba(0, 198, 251, 0.32);
+  --el-color-primary-light-8: rgba(0, 198, 251, 0.2);
+  --el-color-primary-light-9: rgba(0, 198, 251, 0.12);
+  --el-color-primary-dark-2: var(--tech-color-brand-700);
+
+  --el-text-color-primary: var(--tech-text-primary);
+  --el-text-color-regular: var(--tech-text-regular);
+  --el-text-color-secondary: var(--tech-text-secondary);
+  --el-text-color-placeholder: var(--tech-text-placeholder);
+  --el-text-color-disabled: var(--tech-text-disabled);
+
+  --el-bg-color: var(--tech-bg-surface);
+  --el-bg-color-page: var(--tech-bg-base);
+  --el-bg-color-overlay: var(--tech-bg-elevated);
+  --el-fill-color: rgba(255, 255, 255, 0.04);
+  --el-fill-color-light: rgba(255, 255, 255, 0.06);
+  --el-fill-color-blank: transparent;
+
+  --el-border-color: var(--tech-border-color);
+  --el-border-color-light: var(--tech-border-color-soft);
+  --el-border-color-lighter: rgba(0, 138, 188, 0.08);
+  --el-border-color-extra-light: rgba(0, 138, 188, 0.06);
+
+  --el-mask-color: rgba(3, 9, 18, 0.76);
+  --el-mask-color-extra-light: rgba(3, 9, 18, 0.4);
+  --el-box-shadow-light: var(--tech-shadow-sm);
+  --el-box-shadow: var(--tech-shadow-md);
+  --el-box-shadow-dark: var(--tech-shadow-lg);
+
+  --el-border-radius-base: var(--tech-radius-sm);
+  --el-border-radius-small: var(--tech-radius-xs);
+  --el-border-radius-round: var(--tech-radius-pill);
+}
