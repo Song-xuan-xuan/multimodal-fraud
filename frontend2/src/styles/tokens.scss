@@ -144,6 +144,19 @@ html[data-theme='dark-tech'] {
   --app-action-ghost-text: var(--tech-button-ghost-text);
   --app-action-ghost-bg-hover: var(--tech-button-ghost-bg-hover);
 
+  --app-control-input-bg: rgba(252, 250, 246, 0.96);
+  --app-control-input-bg-hover: rgba(255, 255, 255, 0.98);
+  --app-control-input-border: rgba(82, 96, 109, 0.18);
+  --app-control-input-border-hover: rgba(47, 107, 122, 0.34);
+  --app-control-input-border-focus: rgba(47, 107, 122, 0.48);
+  --app-control-disabled-bg: rgba(217, 209, 195, 0.46);
+  --app-control-disabled-text: rgba(82, 96, 109, 0.56);
+  --app-control-disabled-border: rgba(123, 135, 148, 0.2);
+
+  --app-empty-illustration-1: rgba(47, 107, 122, 0.08);
+  --app-empty-illustration-2: rgba(47, 107, 122, 0.12);
+  --app-empty-illustration-3: rgba(214, 168, 95, 0.16);
+
   --tech-card-border: rgba(0, 138, 188, 0.2);
   --tech-card-border-hover: rgba(0, 198, 251, 0.34);
   --tech-card-shadow: 0 14px 38px rgba(1, 8, 20, 0.3);

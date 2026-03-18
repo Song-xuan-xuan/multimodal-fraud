@@ -1,0 +1,80 @@
+@use './tokens.scss';
+@use './motion.scss';
+@use './theme-dark-tech.scss';
+@use './element-overrides.scss';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--tech-theme-surface-base);
+}
+
+body {
+  font-family: var(--tech-font-family);
+  color: var(--tech-theme-text-regular);
+  line-height: 1.6;
+  background: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--tech-theme-text-primary);
+  line-height: 1.2;
+}
+
+p,
+li,
+label,
+span,
+small {
+  color: inherit;
+}
+
+#app,
+.page-shell {
+  color: inherit;
+}
+
+a {
+  color: var(--tech-theme-text-brand);
+  text-decoration: none;
+  transition: color var(--tech-duration-fast) var(--tech-ease-out);
+}
+
+a:hover {
+  color: var(--app-accent-primary-strong);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+  box-shadow: var(--tech-theme-focus-ring);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+  cursor: not-allowed;
+}

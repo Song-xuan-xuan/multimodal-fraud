@@ -1,0 +1,479 @@
+:root,
+html[data-theme='dark-tech'] {
+  --tech-el-surface-bg: var(--app-surface-elevated);
+  --tech-el-surface-bg-hover: color-mix(in srgb, var(--app-surface-elevated) 88%, white 12%);
+  --tech-el-surface-bg-strong: var(--app-surface-panel);
+  --tech-el-surface-bg-muted: var(--app-surface-note);
+  --tech-el-surface-fill: color-mix(in srgb, var(--app-surface-accent) 12%, var(--app-surface-elevated));
+  --tech-el-surface-fill-hover: color-mix(in srgb, var(--app-surface-accent) 18%, var(--app-surface-elevated));
+  --tech-el-surface-fill-active: color-mix(in srgb, var(--app-surface-accent) 24%, var(--app-surface-elevated));
+  --tech-el-surface-input: var(--app-control-input-bg);
+
+  --tech-el-primary-bg: var(--app-action-primary-bg);
+  --tech-el-primary-bg-hover: linear-gradient(135deg, color-mix(in srgb, var(--app-accent-primary-strong) 82%, white 18%) 0%, var(--app-accent-primary) 100%);
+  --tech-el-primary-border: var(--app-border-strong);
+  --tech-el-primary-border-hover: var(--app-border-focus);
+  --tech-el-primary-text: var(--app-action-primary-text);
+  --tech-el-primary-shadow: 0 10px 24px rgba(23, 48, 74, 0.18);
+  --tech-el-primary-shadow-hover: 0 14px 28px rgba(23, 48, 74, 0.24);
+
+  --tech-el-secondary-border: var(--app-action-secondary-border);
+  --tech-el-secondary-text: var(--app-text-primary);
+  --tech-el-secondary-bg: var(--tech-el-surface-fill);
+  --tech-el-secondary-bg-hover: var(--tech-el-surface-fill-hover);
+
+  --tech-el-ghost-text: var(--app-action-ghost-text);
+  --tech-el-ghost-bg-hover: color-mix(in srgb, var(--app-surface-accent) 20%, transparent);
+
+  --tech-el-status-success-bg: color-mix(in srgb, var(--app-status-success-soft) 52%, var(--app-surface-elevated));
+  --tech-el-status-success-border: color-mix(in srgb, var(--app-status-success) 32%, transparent);
+  --tech-el-status-success-text: color-mix(in srgb, var(--app-status-success) 84%, black 10%);
+
+  --tech-el-status-warning-bg: color-mix(in srgb, var(--app-status-warning-soft) 58%, var(--app-surface-elevated));
+  --tech-el-status-warning-border: color-mix(in srgb, var(--app-status-warning) 34%, transparent);
+  --tech-el-status-warning-text: color-mix(in srgb, var(--app-status-warning) 84%, black 8%);
+
+  --tech-el-status-danger-bg: color-mix(in srgb, var(--app-status-danger-soft) 58%, var(--app-surface-elevated));
+  --tech-el-status-danger-border: color-mix(in srgb, var(--app-status-danger) 34%, transparent);
+  --tech-el-status-danger-text: color-mix(in srgb, var(--app-status-danger) 84%, black 8%);
+
+  --tech-el-status-info-bg: color-mix(in srgb, var(--app-status-info-soft) 58%, var(--app-surface-elevated));
+  --tech-el-status-info-border: color-mix(in srgb, var(--app-status-info) 34%, transparent);
+  --tech-el-status-info-text: color-mix(in srgb, var(--app-status-info) 80%, black 10%);
+}
+
+.el-card {
+  border-color: var(--app-border-default);
+  border-radius: var(--tech-radius-md);
+  background: var(--tech-el-surface-bg);
+  box-shadow: 0 10px 24px rgba(31, 41, 51, 0.05);
+}
+
+.el-card.is-hover-shadow:hover,
+.el-card:hover {
+  border-color: var(--app-border-strong);
+  background: var(--tech-el-surface-bg-hover);
+  box-shadow: 0 14px 30px rgba(31, 41, 51, 0.08);
+}
+
+.el-page-header {
+  padding: 0;
+}
+
+.el-page-header__content,
+.el-page-header__title {
+  color: var(--app-text-primary);
+}
+
+.el-button {
+  border-radius: var(--tech-radius-pill);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition:
+    transform var(--tech-duration-fast) var(--tech-ease-out),
+    box-shadow var(--tech-duration-fast) var(--tech-ease-out),
+    border-color var(--tech-duration-fast) var(--tech-ease-out),
+    background-color var(--tech-duration-fast) var(--tech-ease-out),
+    color var(--tech-duration-fast) var(--tech-ease-out);
+}
+
+.el-button:hover {
+  transform: translateY(-1px);
+}
+
+.el-button.is-disabled,
+.el-button.is-disabled:hover,
+.el-button:disabled,
+.el-button:disabled:hover {
+  border-color: var(--app-control-disabled-border);
+  background: var(--app-control-disabled-bg);
+  color: var(--app-control-disabled-text);
+  box-shadow: none;
+  transform: none;
+}
+
+.el-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-accent-primary) 18%, transparent);
+}
+
+.el-button--primary {
+  border-color: var(--tech-el-primary-border);
+  background: var(--tech-el-primary-bg);
+  color: var(--tech-el-primary-text);
+  box-shadow: var(--tech-el-primary-shadow);
+}
+
+.el-button--primary:hover,
+.el-button--primary:focus-visible {
+  border-color: var(--tech-el-primary-border-hover);
+  background: var(--tech-el-primary-bg-hover);
+  color: var(--tech-el-primary-text);
+  box-shadow: var(--tech-el-primary-shadow-hover);
+}
+
+.el-button--default,
+.el-button--info,
+.el-button--success,
+.el-button--warning,
+.el-button--danger {
+  border-color: var(--tech-el-secondary-border);
+  background: var(--tech-el-secondary-bg);
+  color: var(--tech-el-secondary-text);
+}
+
+.el-descriptions {
+  --el-descriptions-table-border: var(--app-border-default);
+  --el-descriptions-item-bordered-label-background: color-mix(in srgb, var(--app-surface-accent) 16%, var(--app-surface-elevated));
+  --el-descriptions-item-bordered-content-background: var(--app-surface-elevated);
+  --el-descriptions-item-bordered-label-text-color: var(--app-text-secondary);
+  --el-descriptions-item-bordered-content-text-color: var(--app-text-regular);
+}
+
+.el-dialog {
+  border: 1px solid var(--app-border-strong);
+  background: var(--app-surface-elevated);
+}
+
+.el-dialog__header,
+.el-dialog__body,
+.el-dialog__footer {
+  color: var(--app-text-regular);
+}
+
+.el-radio,
+.el-checkbox {
+  color: var(--app-text-regular);
+}
+
+.el-empty {
+  --el-empty-fill-color-0: var(--app-empty-illustration-1);
+  --el-empty-fill-color-1: var(--app-empty-illustration-1);
+  --el-empty-fill-color-2: var(--app-empty-illustration-2);
+  --el-empty-fill-color-3: var(--app-empty-illustration-2);
+  --el-empty-fill-color-4: var(--app-empty-illustration-2);
+  --el-empty-fill-color-5: var(--app-empty-illustration-3);
+  --el-empty-fill-color-6: var(--app-empty-illustration-3);
+  --el-empty-fill-color-7: var(--app-empty-illustration-3);
+  --el-empty-fill-color-8: color-mix(in srgb, var(--app-accent-primary) 18%, transparent);
+  --el-empty-fill-color-9: color-mix(in srgb, var(--app-accent-primary) 22%, transparent);
+}
+
+.el-empty__description p {
+  color: var(--app-text-secondary);
+}
+
+.el-tag:not(.el-tag--success):not(.el-tag--danger):not(.el-tag--warning):not(.el-tag--info) {
+  color: var(--app-text-primary);
+  background: color-mix(in srgb, var(--app-surface-accent) 18%, var(--app-surface-elevated));
+  border-color: var(--app-border-default);
+}
+
+.el-button--default:hover,
+.el-button--info:hover,
+.el-button--success:hover,
+.el-button--warning:hover,
+.el-button--danger:hover,
+.el-button--default:focus-visible,
+.el-button--info:focus-visible,
+.el-button--success:focus-visible,
+.el-button--warning:focus-visible,
+.el-button--danger:focus-visible {
+  border-color: var(--app-border-strong);
+  background: var(--tech-el-secondary-bg-hover);
+  color: var(--app-text-primary);
+}
+
+.el-button--danger {
+  border-color: var(--tech-el-status-danger-border);
+  background: var(--tech-el-status-danger-bg);
+  color: var(--tech-el-status-danger-text);
+}
+
+.el-button--danger:hover,
+.el-button--danger:focus-visible {
+  border-color: color-mix(in srgb, var(--app-status-danger) 56%, transparent);
+  background: color-mix(in srgb, var(--app-status-danger-soft) 88%, var(--app-surface-elevated));
+  color: var(--tech-el-status-danger-text);
+}
+
+.el-button.is-plain,
+.el-button--default.is-plain,
+.el-button--info.is-plain,
+.el-button--success.is-plain,
+.el-button--warning.is-plain,
+.el-button--danger.is-plain {
+  background: transparent;
+}
+
+.el-button.is-text,
+.el-button--text,
+.el-button.is-link,
+.el-button--link {
+  border-color: transparent;
+  background: transparent;
+  color: var(--tech-el-ghost-text);
+  box-shadow: none;
+}
+
+.el-button.is-text:hover,
+.el-button--text:hover,
+.el-button.is-link:hover,
+.el-button--link:hover,
+.el-button.is-text:focus-visible,
+.el-button--text:focus-visible,
+.el-button.is-link:focus-visible,
+.el-button--link:focus-visible {
+  background: var(--tech-el-ghost-bg-hover);
+  color: var(--app-accent-primary-strong);
+}
+
+.el-input__wrapper,
+.el-textarea__inner,
+.el-select__wrapper {
+  border: 1px solid var(--app-control-input-border);
+  border-radius: var(--tech-radius-sm);
+  background: var(--tech-el-surface-input);
+  box-shadow: none;
+}
+
+.el-input__wrapper:hover,
+.el-select__wrapper:hover,
+.el-textarea__inner:hover {
+  border-color: var(--app-control-input-border-hover);
+  background: var(--app-control-input-bg-hover);
+  box-shadow: none;
+}
+
+.el-input__wrapper.is-focus,
+.el-select__wrapper.is-focused,
+.el-textarea__inner:focus {
+  border-color: var(--app-control-input-border-focus);
+  box-shadow:
+    0 0 0 1px var(--app-control-input-border-focus),
+    0 0 0 4px color-mix(in srgb, var(--app-accent-primary) 10%, transparent);
+}
+
+.el-tag {
+  border-color: var(--app-border-default);
+  background: var(--tech-el-surface-fill);
+  color: var(--app-text-secondary);
+}
+
+.el-tag--success,
+.el-tag.el-tag--success {
+  border-color: var(--tech-el-status-success-border);
+  background: var(--tech-el-status-success-bg);
+  color: var(--tech-el-status-success-text);
+}
+
+.el-tag--warning,
+.el-tag.el-tag--warning {
+  border-color: var(--tech-el-status-warning-border);
+  background: var(--tech-el-status-warning-bg);
+  color: var(--tech-el-status-warning-text);
+}
+
+.el-tag--danger,
+.el-tag.el-tag--danger {
+  border-color: var(--tech-el-status-danger-border);
+  background: var(--tech-el-status-danger-bg);
+  color: var(--tech-el-status-danger-text);
+}
+
+.el-tag--info,
+.el-tag.el-tag--info {
+  border-color: var(--tech-el-status-info-border);
+  background: var(--tech-el-status-info-bg);
+  color: var(--tech-el-status-info-text);
+}
+
+.el-alert {
+  border: 1px solid var(--app-border-default);
+  border-radius: var(--tech-radius-md);
+  background: var(--tech-el-surface-bg-muted);
+  color: var(--app-text-regular);
+}
+
+.el-alert__title,
+.el-alert__description,
+.el-alert__icon,
+.el-alert__close-btn {
+  color: inherit;
+}
+
+.el-alert--success {
+  border-color: var(--tech-el-status-success-border);
+  background: var(--tech-el-status-success-bg);
+  color: var(--tech-el-status-success-text);
+}
+
+.el-alert--warning {
+  border-color: var(--tech-el-status-warning-border);
+  background: var(--tech-el-status-warning-bg);
+  color: var(--tech-el-status-warning-text);
+}
+
+.el-alert--error,
+.el-alert--danger {
+  border-color: var(--tech-el-status-danger-border);
+  background: var(--tech-el-status-danger-bg);
+  color: var(--tech-el-status-danger-text);
+}
+
+.el-alert--info {
+  border-color: var(--tech-el-status-info-border);
+  background: var(--tech-el-status-info-bg);
+  color: var(--tech-el-status-info-text);
+}
+
+.el-tabs {
+  --el-tabs-header-height: 44px;
+}
+
+.el-tabs__nav-wrap::after,
+.el-tabs__item.is-top:nth-child(2),
+.el-tabs__item.is-top:last-child {
+  border-color: var(--app-divider);
+}
+
+.el-tabs__item {
+  color: var(--app-text-secondary);
+}
+
+.el-tabs__item:hover,
+.el-tabs__item.is-active {
+  color: var(--app-accent-primary-strong);
+}
+
+.el-tabs__active-bar {
+  background: var(--tech-el-primary-bg);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--app-accent-primary) 28%, transparent);
+}
+
+.el-table {
+  --el-table-border-color: var(--app-border-soft);
+  --el-table-header-bg-color: var(--tech-el-surface-bg-strong);
+  --el-table-tr-bg-color: var(--app-surface-elevated);
+  --el-table-row-hover-bg-color: color-mix(in srgb, var(--app-surface-accent) 14%, var(--app-surface-elevated));
+  --el-table-current-row-bg-color: color-mix(in srgb, var(--app-surface-accent) 24%, var(--app-surface-elevated));
+  overflow: hidden;
+  border-radius: var(--tech-radius-md);
+  background: var(--app-surface-elevated);
+  box-shadow: 0 10px 24px rgba(31, 41, 51, 0.05);
+}
+
+.el-table th.el-table__cell,
+.el-table tr,
+.el-table td.el-table__cell {
+  background: transparent;
+}
+
+.el-table th.el-table__cell {
+  color: var(--app-text-primary);
+  font-weight: 700;
+}
+
+.el-table td.el-table__cell {
+  color: var(--app-text-regular);
+}
+
+.el-table__body tr {
+  transition: background-color var(--tech-duration-fast) var(--tech-ease-out);
+}
+
+
+.el-form-item__label,
+.el-radio__label,
+.el-checkbox__label,
+.el-timeline-item__content,
+.el-result__title,
+.el-result__subtitle {
+  color: var(--app-text-regular);
+}
+
+.el-timeline-item__timestamp {
+  color: var(--app-text-tertiary);
+}
+
+.el-result__icon svg {
+  fill: currentColor;
+}
+
+.el-pagination {
+  --el-pagination-button-bg-color: var(--tech-el-secondary-bg);
+  --el-pagination-hover-color: var(--app-accent-primary-strong);
+  gap: 6px;
+}
+
+.el-pagination .btn-prev,
+.el-pagination .btn-next,
+.el-pagination .el-pager li {
+  min-width: 34px;
+  border: 1px solid var(--tech-el-secondary-border);
+  border-radius: var(--tech-radius-pill);
+  background: var(--tech-el-secondary-bg);
+  color: var(--app-text-secondary);
+}
+
+.el-pagination .btn-prev:hover,
+.el-pagination .btn-next:hover,
+.el-pagination .el-pager li:hover {
+  border-color: var(--app-border-strong);
+  background: var(--tech-el-secondary-bg-hover);
+  color: var(--app-text-primary);
+}
+
+.el-pagination .el-pager li.is-active {
+  border-color: var(--tech-el-primary-border);
+  background: var(--tech-el-primary-bg);
+  color: var(--tech-el-primary-text);
+  box-shadow: var(--tech-el-primary-shadow);
+}
+
+.el-dialog,
+.el-drawer {
+  border: 1px solid var(--app-border-strong);
+  background: var(--tech-el-surface-bg-strong);
+  box-shadow: 0 24px 60px rgba(31, 41, 51, 0.14);
+}
+
+.el-dialog__header,
+.el-dialog__body,
+.el-dialog__footer,
+.el-drawer__header,
+.el-drawer__body {
+  color: var(--app-text-regular);
+}
+
+.el-overlay-dialog,
+.el-drawer__container {
+  backdrop-filter: blur(2px);
+}
+
+.el-dialog {
+  animation: modalTranslateY 220ms var(--tech-ease-out);
+}
+
+.el-progress {
+  --el-progress-track-color: var(--tech-el-surface-fill);
+}
+
+.el-progress-bar__outer {
+  background: var(--tech-el-surface-fill);
+}
+
+.el-progress-bar__inner,
+.el-progress-circle__track + .el-progress__text,
+.el-progress__text {
+  color: var(--app-text-primary);
+}
+
+.el-progress-bar__inner {
+  background: var(--tech-el-primary-bg);
+}
+
+.el-menu,
+.el-divider {
+  border-color: var(--app-divider);
+}
