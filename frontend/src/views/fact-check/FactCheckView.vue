@@ -338,7 +338,66 @@ onMounted(async () => {
   justify-content: flex-end;
   margin-top: 12px;
 }
+  .fact-check-view :deep(.el-table) {
+    --el-table-bg-color: transparent;
+    --el-table-tr-bg-color: rgba(14, 28, 54, 0.72);
+    --el-table-row-hover-bg-color: rgba(76, 201, 255, 0.10);
+    --el-table-header-bg-color: rgba(76, 201, 255, 0.08);
+    --el-table-border-color: rgba(76, 201, 255, 0.08);
+    --el-table-text-color: var(--tech-text-regular, #dbe9ff);
+    --el-table-header-text-color: var(--tech-text-secondary, #a0aec0);
+    color: var(--tech-text-regular, #dbe9ff);
+    background: transparent;
+  }
 
+  .fact-check-view :deep(.el-table__inner-wrapper),
+  .fact-check-view :deep(.el-table__body-wrapper),
+  .fact-check-view :deep(.el-table__header-wrapper),
+  .fact-check-view :deep(.el-table__empty-block) {
+    background: transparent;
+  }
+
+  .fact-check-view :deep(.el-table__cell) {
+    background: transparent;
+    border-bottom-color: rgba(76, 201, 255, 0.08);
+  }
+
+  .fact-check-view :deep(.el-table__row--striped td.el-table__cell) {
+    background: rgba(76, 201, 255, 0.04) !important;
+  }
+
+  .fact-check-view :deep(.el-table__inner-wrapper:before) {
+    background-color: rgba(76, 201, 255, 0.12);
+  }
+
+  .fact-check-view :deep(.el-pagination) {
+    --el-pagination-bg-color: transparent;
+    --el-pagination-text-color: var(--tech-text-secondary, #a0aec0);
+    --el-pagination-button-color: var(--tech-text-secondary, #a0aec0);
+    --el-pagination-hover-color: #4cc9ff;
+    --el-pagination-button-bg-color: rgba(12, 27, 52, 0.84);
+    --el-pagination-button-disabled-bg-color: rgba(255, 255, 255, 0.04);
+    --el-pagination-button-disabled-color: rgba(160, 174, 192, 0.35);
+  }
+
+  .fact-check-view__pagination :deep(.btn-prev),
+  .fact-check-view__pagination :deep(.btn-next),
+  .fact-check-view__pagination :deep(.el-pager li) {
+    background: rgba(12, 27, 52, 0.84);
+    border: 1px solid rgba(76, 201, 255, 0.18);
+    color: var(--tech-text-secondary, #a0aec0);
+  }
+
+  .fact-check-view__pagination :deep(.el-pagination .is-active) {
+    background: linear-gradient(135deg, #18c3ff 0%, #1094d8 100%);
+    border-color: transparent;
+    color: #f6fbff;
+  }
+
+  .fact-check-view__pagination :deep(.el-input__wrapper) {
+    background: rgba(12, 27, 52, 0.84);
+    box-shadow: 0 0 0 1px rgba(76, 201, 255, 0.18) inset;
+  }
 .fact-check-view--embedded {
   padding: 0;
 }
