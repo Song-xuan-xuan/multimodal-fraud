@@ -9,7 +9,6 @@ node_modules/
 frontend/node_modules/
 frontend/dist/
 frontend/.claude/
-frontend/INIT.md
 
 frontend2/
 
@@ -20,10 +19,11 @@ venv/
 
 # Models
 model/
-
+tests/
 # Local tool state
 .claude/
 .vscode/
+.worktrees/
 
 # Generated RAG data/index
 backend/data/fraud_knowledge.json
@@ -34,7 +34,6 @@ backend/app/static/
 backend/__pycache__
 backend/.env
 backend/app/static/case_data/*.json
-backend/INIT.md
 # Large local datasets
 
 test-dataset/
@@ -44,4 +43,10 @@ docs/
 
 service-main/
 scripts/migrate_data.py
-
+scripts/*.js
+out/
+*.xml
+INIT.md
+frontend_b_incremental_2026-04-02
+frontend_b_full_2026-04-02
+instruct.md

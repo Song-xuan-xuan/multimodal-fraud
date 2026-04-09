@@ -6,6 +6,10 @@ export interface ProfileData {
   occupation: string | null
   region: string | null
   concern_tags: string[]
+  guardian_name: string | null
+  guardian_relation: string | null
+  guardian_email: string | null
+  guardian_notify_enabled: boolean | null
 }
 
 export interface RecentDetection {
@@ -69,6 +73,10 @@ export interface ProfileUpdatePayload {
   occupation?: string | null
   region?: string | null
   concern_tags?: string[]
+  guardian_name?: string | null
+  guardian_relation?: string | null
+  guardian_email?: string | null
+  guardian_notify_enabled?: boolean | null
 }
 
 export interface SuggestionResponse {

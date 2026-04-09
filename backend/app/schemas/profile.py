@@ -10,6 +10,10 @@ class UserProfileUpdate(BaseModel):
     occupation: Optional[str] = None
     region: Optional[str] = None
     concern_tags: Optional[list[str]] = None
+    guardian_name: Optional[str] = None
+    guardian_relation: Optional[str] = None
+    guardian_email: Optional[str] = None
+    guardian_notify_enabled: Optional[bool] = None
 
 
 class RecentDetection(BaseModel):
@@ -59,6 +63,10 @@ class ProfileData(BaseModel):
     occupation: Optional[str] = None
     region: Optional[str] = None
     concern_tags: list[str] = Field(default_factory=list)
+    guardian_name: Optional[str] = None
+    guardian_relation: Optional[str] = None
+    guardian_email: Optional[str] = None
+    guardian_notify_enabled: Optional[bool] = None
 
 
 class RoleDefenseStrategy(BaseModel):

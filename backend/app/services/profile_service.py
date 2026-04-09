@@ -184,6 +184,10 @@ def _profile_to_data(profile: UserProfile) -> ProfileData:
         occupation=profile.occupation,
         region=profile.region,
         concern_tags=tags,
+        guardian_name=profile.guardian_name,
+        guardian_relation=profile.guardian_relation,
+        guardian_email=profile.guardian_email,
+        guardian_notify_enabled=profile.guardian_notify_enabled,
     )
 
 

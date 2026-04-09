@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 from typing import Optional
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -19,6 +19,10 @@ class UserProfile(Base):
     occupation: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     region: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     concern_tags: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    guardian_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    guardian_relation: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    guardian_email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    guardian_notify_enabled: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=lambda: datetime.now(timezone.utc),

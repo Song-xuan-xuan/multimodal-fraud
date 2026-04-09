@@ -23,6 +23,24 @@
               class="profile-hero__concern-tag"
             >{{ tag }}</el-tag>
           </div>
+          <div
+            v-if="profileData.guardian_name || profileData.guardian_email"
+            class="profile-hero__guardian"
+          >
+            <span class="profile-hero__guardian-title">监护人联动</span>
+            <p>
+              {{ profileData.guardian_name || '未命名监护人' }}
+              <span v-if="profileData.guardian_relation"> · {{ profileData.guardian_relation }}</span>
+              <span v-if="profileData.guardian_email"> · {{ profileData.guardian_email }}</span>
+            </p>
+            <el-tag
+              size="small"
+              :type="profileData.guardian_notify_enabled ? 'danger' : 'info'"
+              effect="dark"
+            >
+              {{ profileData.guardian_notify_enabled ? '高风险自动预警已开启' : '高风险自动预警未开启' }}
+            </el-tag>
+          </div>
           <p v-if="!hasProfile" class="profile-hero__guide">完善画像，获取个性化防护建议</p>
         </div>
         <div class="profile-hero__actions">
@@ -262,6 +280,23 @@
             >{{ tag }}</el-check-tag>
           </div>
         </el-form-item>
+        <el-divider>监护人联动设置</el-divider>
+        <el-form-item label="监护人姓名">
+          <el-input v-model="editForm.guardian_name" placeholder="请输入监护人姓名" clearable />
+        </el-form-item>
+        <el-form-item label="关系">
+          <el-input v-model="editForm.guardian_relation" placeholder="例如：父亲、母亲、家属" clearable />
+        </el-form-item>
+        <el-form-item label="监护人邮箱">
+          <el-input v-model="editForm.guardian_email" placeholder="请输入可接收提醒的邮箱" clearable />
+        </el-form-item>
+        <el-form-item label="预警通知">
+          <el-switch
+            v-model="editForm.guardian_notify_enabled"
+            active-text="高风险时自动通知监护人"
+            inactive-text="仅保留信息，不自动通知"
+          />
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="showEditDialog = false">取消</el-button>
@@ -297,6 +332,10 @@ const profileData = reactive<ProfileData>({
   occupation: null,
   region: null,
   concern_tags: [],
+  guardian_name: null,
+  guardian_relation: null,
+  guardian_email: null,
+  guardian_notify_enabled: null,
 })
 
 const behaviorStats = reactive<BehaviorStats>({
@@ -329,12 +368,20 @@ const editForm = reactive<{
   occupation: string | null
   region: string | null
   concern_tags: string[]
+  guardian_name: string | null
+  guardian_relation: string | null
+  guardian_email: string | null
+  guardian_notify_enabled: boolean
 }>({
   age_group: null,
   gender: null,
   occupation: null,
   region: null,
   concern_tags: [],
+  guardian_name: null,
+  guardian_relation: null,
+  guardian_email: null,
+  guardian_notify_enabled: false,
 })
 
 // --- Computed ---
@@ -343,7 +390,14 @@ const avatarLetter = computed(() =>
 )
 
 const hasProfile = computed(() =>
-  !!(profileData.age_group || profileData.occupation || profileData.region || profileData.concern_tags.length),
+  !!(
+    profileData.age_group ||
+    profileData.occupation ||
+    profileData.region ||
+    profileData.concern_tags.length ||
+    profileData.guardian_name ||
+    profileData.guardian_email
+  ),
 )
 
 const statCards = computed(() => [
@@ -494,6 +548,10 @@ async function saveProfile() {
       occupation: editForm.occupation,
       region: editForm.region,
       concern_tags: editForm.concern_tags,
+      guardian_name: editForm.guardian_name,
+      guardian_relation: editForm.guardian_relation,
+      guardian_email: editForm.guardian_email,
+      guardian_notify_enabled: editForm.guardian_notify_enabled,
     }
     const res = await profileApi.updateMe(payload)
     Object.assign(profileData, res.profile)
@@ -539,6 +597,10 @@ watch(showEditDialog, (open) => {
     editForm.occupation = profileData.occupation
     editForm.region = profileData.region
     editForm.concern_tags = [...profileData.concern_tags]
+    editForm.guardian_name = profileData.guardian_name
+    editForm.guardian_relation = profileData.guardian_relation
+    editForm.guardian_email = profileData.guardian_email
+    editForm.guardian_notify_enabled = profileData.guardian_notify_enabled === true
   }
 })
 
@@ -579,6 +641,27 @@ onMounted(async () => {
 .profile-hero__tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
 .profile-hero__concern { display: flex; gap: 6px; flex-wrap: wrap; }
 .profile-hero__concern-tag { --el-tag-bg-color: rgba(64, 158, 255, 0.15); }
+.profile-hero__guardian {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 107, 107, 0.18);
+  background: color-mix(in srgb, #ff6b6b 8%, transparent);
+  justify-items: start;
+}
+.profile-hero__guardian-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--tech-theme-text-secondary, #a0aec0);
+}
+.profile-hero__guardian p {
+  margin: 0;
+  color: var(--tech-theme-text-primary, #fff);
+  line-height: 1.6;
+}
 .profile-hero__guide { color: var(--tech-theme-text-secondary, #a0aec0); font-size: 14px; margin: 4px 0 0; }
 .profile-hero__actions { flex-shrink: 0; display: flex; gap: 8px; }
 

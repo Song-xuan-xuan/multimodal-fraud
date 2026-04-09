@@ -59,6 +59,14 @@ class GuardianActionInfo(BaseModel):
     checklist: list[str] = Field(default_factory=list)
 
 
+class GuardianNotificationInfo(BaseModel):
+    attempted: bool = False
+    sent: bool = False
+    status: str = "skipped"
+    message: str = ""
+    recipient_masked: str = ""
+
+
 class AgentReportInfo(BaseModel):
     title: str = "安全监测报告"
     executive_summary: str = ""
@@ -85,5 +93,7 @@ class AgentAnalyzeResponse(BaseModel):
     recommendations: list[str] = Field(default_factory=list)
     guardian_action_needed: bool = False
     guardian_action: GuardianActionInfo = Field(default_factory=GuardianActionInfo)
+    guardian_notification: GuardianNotificationInfo = Field(default_factory=GuardianNotificationInfo)
+    user_ack_required: bool = False
     report: AgentReportInfo = Field(default_factory=AgentReportInfo)
     summary: str = ""

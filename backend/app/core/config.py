@@ -43,6 +43,10 @@ class Settings(BaseSettings):
     VISION_MODEL: str = ""
     VISION_TEMPERATURE: float = 0.1
 
+    RESEND_API_KEY: str = ""
+    RESEND_FROM_EMAIL: str = ""
+    RESEND_FROM_NAME: str = "反诈智能助手"
+
     EMBEDDING_MODEL: str = "BAAI/bge-small-zh-v1.5"
     EMBEDDING_DEVICE: str = "cuda"
     LOCAL_MODEL_NAME: str = "gpt-neo-2.7B"

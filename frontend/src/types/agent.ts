@@ -17,6 +17,14 @@ export interface GuardianActionInfo {
   checklist: string[]
 }
 
+export interface GuardianNotificationInfo {
+  attempted: boolean
+  sent: boolean
+  status: string
+  message: string
+  recipient_masked: string
+}
+
 export interface AgentIntentInfo {
   code: string
   label: string
@@ -80,6 +88,8 @@ export interface AgentAnalyzeResponse {
   recommendations: string[]
   guardian_action_needed: boolean
   guardian_action: GuardianActionInfo
+  guardian_notification: GuardianNotificationInfo
+  user_ack_required: boolean
   report: AgentReportInfo
   summary: string
 }

@@ -42,7 +42,7 @@
             <span>专业化结论输出</span>
           </div>
 
-          <template v-if="result">
+          <template v-if="result && !isResultBlocked">
             <div class="agent-summary">
               <div class="agent-summary__badges">
                 <el-tag :type="riskTagType(result.risk_level)" effect="dark">风险等级：{{ riskLevelLabel(result.risk_level) }}</el-tag>
@@ -75,14 +75,34 @@
               </ul>
             </div>
           </template>
+          <template v-else-if="result && isResultBlocked">
+            <section class="agent-risk-gate">
+              <div class="agent-risk-gate__badge">
+                <el-tag type="danger" effect="dark">高风险强提醒</el-tag>
+                <el-tag v-if="result.guardian_notification.attempted" effect="plain">
+                  {{ guardianNotificationLabel }}
+                </el-tag>
+              </div>
+              <h4>请先暂停进一步操作，再查看完整分析</h4>
+              <p class="agent-risk-gate__summary">
+                {{ result.summary }}
+              </p>
+              <ul class="agent-risk-gate__checklist">
+                <li>立即停止转账、充值、验证码提供和共享屏幕操作。</li>
+                <li>优先通过电话直接联系对方或家属核实，不要仅在聊天软件里确认。</li>
+                <li v-if="result.guardian_notification.message">{{ result.guardian_notification.message }}</li>
+              </ul>
+              <el-button type="danger" @click="handleRiskAcknowledged">我已暂停进一步操作</el-button>
+            </section>
+          </template>
 
           <el-empty v-else description="提交至少一种模态输入后开始分析" />
         </section>
       </div>
 
-      <AgentDecisionPanel v-if="result" :result="result" />
+      <AgentDecisionPanel v-if="result && !isResultBlocked" :result="result" />
 
-      <div v-if="result" class="agent-modality-grid">
+      <div v-if="result && !isResultBlocked" class="agent-modality-grid">
         <AgentModalityPanel
           title="文本模态"
           :score="extractScore(result.text_result)"
@@ -106,7 +126,7 @@
         />
       </div>
 
-      <div v-if="result" class="agent-bottom-grid">
+      <div v-if="result && !isResultBlocked" class="agent-bottom-grid">
         <section class="agent-panel tech-surface">
           <div class="agent-panel__header">
             <h3>参考案例</h3>
@@ -144,15 +164,18 @@
         </section>
       </div>
 
-      <GuardianActionCard v-if="result && result.guardian_action.priority !== 'none'" :action="result.guardian_action" />
+      <GuardianActionCard
+        v-if="result && !isResultBlocked && result.guardian_action.priority !== 'none'"
+        :action="result.guardian_action"
+      />
 
-      <AgentReportPreview v-if="result" :result="result" />
+      <AgentReportPreview v-if="result && !isResultBlocked" :result="result" />
     </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import FileUpload from '@/components/common/FileUpload.vue'
 import AgentDecisionPanel from '@/components/agent/AgentDecisionPanel.vue'
@@ -168,6 +191,19 @@ const imageFile = ref<File | null>(null)
 const audioFile = ref<File | null>(null)
 const loading = ref(false)
 const result = ref<AgentAnalyzeResponse | null>(null)
+const hasRiskAcknowledged = ref(false)
+
+const isResultBlocked = computed(() => {
+  return Boolean(result.value?.user_ack_required && !hasRiskAcknowledged.value)
+})
+
+const guardianNotificationLabel = computed(() => {
+  if (!result.value) return ''
+  if (result.value.guardian_notification.sent) {
+    return `已通知监护人 ${result.value.guardian_notification.recipient_masked || ''}`.trim()
+  }
+  return result.value.guardian_notification.message || '监护人通知未完成'
+})
 
 function handleImageSelect(file: File) {
   imageFile.value = file
@@ -209,6 +245,10 @@ function extractSummary(payload: Record<string, any>, fallback: string) {
   return payload?.summary || payload?.label || fallback
 }
 
+function handleRiskAcknowledged() {
+  hasRiskAcknowledged.value = true
+}
+
 async function analyze() {
   if (!text.value.trim() && !imageFile.value && !audioFile.value) {
     ElMessage.warning('请至少提供一种输入模态')
@@ -216,6 +256,7 @@ async function analyze() {
   }
 
   loading.value = true
+  hasRiskAcknowledged.value = false
   try {
     result.value = await agentApi.analyze({
       text: text.value,
@@ -331,6 +372,40 @@ async function analyze() {
 .agent-executive-card strong {
   color: var(--tech-theme-text-primary);
   line-height: 1.6;
+}
+
+.agent-risk-gate {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 107, 107, 0.28);
+  background: linear-gradient(180deg, rgba(94, 16, 24, 0.88), rgba(60, 12, 18, 0.96));
+}
+
+.agent-risk-gate__badge {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.agent-risk-gate h4 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--tech-theme-text-primary);
+}
+
+.agent-risk-gate__summary {
+  margin: 0;
+  color: var(--tech-theme-text-primary);
+  line-height: 1.7;
+}
+
+.agent-risk-gate__checklist {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--tech-theme-text-regular);
+  line-height: 1.8;
 }
 
 .agent-guardian-inline {

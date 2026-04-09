@@ -12,6 +12,7 @@ from app.services.profile_service import (
     get_or_create_profile,
     record_detection,
 )
+from app.services.guardian_notification_service import send_guardian_alert_email
 from app.services.rag_service import ask_question
 from app.services.vision_service import analyze_image_fraud_risk
 
@@ -283,11 +284,11 @@ def _build_guardian_action(
             'checklist': [],
         }
 
-    age_group = profile_summary.age_group or '重点保护对象'
+    contact_role = profile_summary.guardian_relation or '监护人/家属'
     priority = 'urgent' if risk_level == 'high' else 'recommended'
     notice = (
-        f'系统检测到高风险场景，疑似涉及{fraud_summary}，当前用户属于{age_group}重点防护群体，'
-        '建议监护人立即联系当事人核实，暂停转账或进一步操作。'
+        f'系统检测到高风险场景，疑似涉及{fraud_summary}，当前账户已开启监护人联动，'
+        f'建议{contact_role}立即联系当事人核实，暂停转账或进一步操作。'
     )
 
     return {
@@ -404,7 +405,7 @@ def _build_intervention_plan(
                 {'label': '立即暂停转账', 'description': '阻断继续付款、充值、验证码提供和屏幕共享。', 'priority': 'critical'},
                 {'label': '执行身份核验', 'description': '通过官方电话或官方 App 核验对方身份与业务真实性。', 'priority': 'high'},
                 {'label': '保留关键证据', 'description': '保存聊天记录、截图、录音和支付凭证，便于后续处置。', 'priority': 'high'},
-                {'label': '启动监护人联动', 'description': '若为重点保护对象，通知家属或监护人同步介入。', 'priority': 'high' if guardian_action_needed else 'medium'},
+                {'label': '启动监护人联动', 'description': '若账户已配置监护人联动，通知家属或监护人同步介入。', 'priority': 'high' if guardian_action_needed else 'medium'},
             ],
         }
 
@@ -584,7 +585,11 @@ async def analyze_multimodal_input(
     fraud_type_candidates = _collect_fraud_type_candidates(text, transcript + '\n' + image_ocr_text, image_label)
     primary_fraud_type = _resolve_primary_fraud_type(fraud_type_candidates)
     fraud_types = [candidate['label'] for candidate in fraud_type_candidates[:3]] or [primary_fraud_type['label']]
-    guardian_action_needed = risk_level == 'high' and profile_summary.age_group in {'老人', '儿童'}
+    has_guardian_channel = bool(
+        (profile_summary.guardian_notify_enabled is True)
+        and (profile_summary.guardian_email or '').strip()
+    )
+    guardian_action_needed = risk_level == 'high' and has_guardian_channel
     guardian_action = _build_guardian_action(risk_level, guardian_action_needed, fraud_types, profile_summary)
     intent = _infer_intent(text, modalities_received, risk_level, primary_fraud_type)
     evidence = _build_evidence_items(signals, rag_sources, profile_summary, text_result, image_result, audio_result)
@@ -608,6 +613,33 @@ async def analyze_multimodal_input(
         intervention_plan=intervention_plan,
         recommendations=recommendations,
     )
+    guardian_notification = {
+        'attempted': False,
+        'sent': False,
+        'status': 'skipped',
+        'message': '当前未触发监护人提醒。',
+        'recipient_masked': '',
+    }
+
+    if guardian_action_needed:
+        try:
+            guardian_notification = await send_guardian_alert_email(
+                guardian_name=profile_summary.guardian_name or '',
+                guardian_email=profile_summary.guardian_email or '',
+                username=user.username,
+                fraud_types=fraud_types,
+                summary=summary,
+                recommended_actions=report.get('recommended_actions', []),
+            )
+        except Exception as exc:
+            logger.error('Guardian notification failed unexpectedly: %s', exc)
+            guardian_notification = {
+                'attempted': True,
+                'sent': False,
+                'status': 'failed',
+                'message': f'监护人提醒邮件发送失败: {exc}',
+                'recipient_masked': '',
+            }
 
     return {
         'risk_level': risk_level,
@@ -632,6 +664,8 @@ async def analyze_multimodal_input(
         'recommendations': recommendations,
         'guardian_action_needed': guardian_action_needed,
         'guardian_action': guardian_action,
+        'guardian_notification': guardian_notification,
+        'user_ack_required': risk_level == 'high',
         'report': report,
         'summary': summary,
     }
